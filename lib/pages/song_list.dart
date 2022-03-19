@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/song_details.dart';
+import 'package:hello_word/pages/song_editor.dart';
 
 import '../models/song.dart';
 import '../widgets/search_widget.dart';
@@ -60,6 +61,15 @@ class _SongListState extends State<SongList> {
       appBar: AppBar(
         title: const Text('Énekek'),
         centerTitle: true,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SongEditor()),
+          );
+        },
+        child: const Icon(Icons.add),
       ),
       body: Column(
         children: [
