@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:hello_word/pages/choose_location.dart';
 import 'package:hello_word/pages/home.dart';
 import 'package:hello_word/pages/loading.dart';
-import 'song.dart';
-import 'song_card.dart';
+import 'package:hello_word/pages/song_list.dart';
 
 void main() {
   runApp(const MyApp());
@@ -22,48 +20,12 @@ class MyApp extends StatelessWidget {
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         // home: const MyHomePage(title: 'Flutter Demo Home Page'),
-        initialRoute: '/home',
+        initialRoute: '/songlist',
         routes: {
           '/': (BuildContext context) => Loading(),
           '/home': (BuildContext context) => Home(),
-          '/location': (BuildContext context) => ChooseLocation(),
+          '/songlist': (BuildContext context) => SongList(),
         });
-  }
-}
-
-class SongList extends StatefulWidget {
-  const SongList({Key? key}) : super(key: key);
-
-  @override
-  _SongListState createState() => _SongListState();
-}
-
-class _SongListState extends State<SongList> {
-  List<Song> songs = [
-    Song(id: 1, title: "title", content: "content1", author: "author42"),
-    Song(id: 2, title: "title", content: "content1", author: "author42"),
-    Song(id: 3, title: "title", content: "content1", author: "author42"),
-    Song(id: 4, title: "title", content: "content1", author: "author42"),
-  ];
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Song List'),
-      ),
-      body: Column(
-          children: songs
-              .map((song) => SongCard(
-                    song: song,
-                    callback: () {
-                      setState(() {
-                        songs.remove(song);
-                      });
-                    },
-                  ))
-              .toList()),
-    );
   }
 }
 

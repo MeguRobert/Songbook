@@ -19,7 +19,7 @@ class _HomeState extends State<Home> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text(
+            const Text(
               'Home',
               style: TextStyle(fontSize: 30),
             ),
@@ -27,8 +27,8 @@ class _HomeState extends State<Home> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text("Edit location"),
-                  Icon(Icons.edit_location),
+                  const Text("Edit location"),
+                  const Icon(Icons.edit_location),
                 ],
               ),
               onPressed: () {
