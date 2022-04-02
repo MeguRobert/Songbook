@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-class SearchWidget extends StatefulWidget {
+class ControlledTextFieldWidget extends StatefulWidget {
   final String text;
   final ValueChanged<String> onChanged;
   final String hintText;
 
-  const SearchWidget({
+  const ControlledTextFieldWidget({
     Key? key,
     required this.text,
     required this.onChanged,
@@ -13,10 +13,11 @@ class SearchWidget extends StatefulWidget {
   }) : super(key: key);
 
   @override
-  _SearchWidgetState createState() => _SearchWidgetState();
+  _ControlledTextFieldWidgetState createState() =>
+      _ControlledTextFieldWidgetState();
 }
 
-class _SearchWidgetState extends State<SearchWidget> {
+class _ControlledTextFieldWidgetState extends State<ControlledTextFieldWidget> {
   final controller = TextEditingController();
 
   @override
@@ -38,7 +39,7 @@ class _SearchWidgetState extends State<SearchWidget> {
         controller: controller,
         decoration: InputDecoration(
           contentPadding: const EdgeInsets.all(8),
-          icon: Icon(Icons.search, color: style.color),
+          // icon: Icon(Icons.search, color: style.color),
           suffixIcon: widget.text.isNotEmpty
               ? GestureDetector(
                   child: Icon(Icons.close, color: style.color),
