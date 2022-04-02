@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hello_word/widgets/editor.dart';
 
 class SongEditor extends StatefulWidget {
   const SongEditor({Key? key}) : super(key: key);
@@ -15,9 +16,7 @@ class _SongEditorState extends State<SongEditor> {
         title: const Text('Song Editor'),
         centerTitle: true,
       ),
-      body: const Center(
-        child: Text('Song Editor'),
-      ),
+      body: const Editor(),
     );
   }
 }
