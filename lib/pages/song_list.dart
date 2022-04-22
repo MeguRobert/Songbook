@@ -14,6 +14,7 @@ class SongList extends StatefulWidget {
 }
 
 class _SongListState extends State<SongList> {
+  // TODO Json file
   List<Song> songs = [];
   List<Song> allSongs = [
     Song(
@@ -62,15 +63,6 @@ class _SongListState extends State<SongList> {
         title: const Text('Énekek'),
         centerTitle: true,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => const SongEditor()),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
       body: Column(
         children: [
           buildSearchBar(),
@@ -99,6 +91,16 @@ class _SongListState extends State<SongList> {
           ),
         ],
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => SongEditor(onSave: saveSong)),
+          );
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 
@@ -107,6 +109,16 @@ class _SongListState extends State<SongList> {
         hintText: "Keresés",
         onChanged: searchSong,
       );
+
+  void saveSong(Song song) {
+    setState(() {
+      // id  =  next id
+      int id = songs.map((song) => song.id).toList().reduce((a, b) => a + b);
+      print(id);
+
+      // songs.add(song);
+    });
+  }
 
   void searchSong(String query) {
     final queriedSongs = allSongs.where((book) {

@@ -6,16 +6,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:hello_word/widgets/controlled_text_field_widget.dart';
 
+import '../models/song.dart';
+import '../tools/local_storage.dart';
+
 class Editor extends StatefulWidget {
-  const Editor({Key? key}) : super(key: key);
+  final LocalStorage storage;
+  final bool readOnly;
+  final Song song;
+
+  const Editor(this.song, this.storage, this.readOnly, {Key? key})
+      : super(key: key);
 
   @override
   State<Editor> createState() => _EditorState();
 }
 
-quill.QuillController _controller = quill.QuillController.basic();
-
 class _EditorState extends State<Editor> {
+  quill.QuillController _controller = quill.QuillController.basic();
   String title = '';
 
   @override
@@ -34,6 +41,7 @@ class _EditorState extends State<Editor> {
                 setState(() {
                   title = value;
                 });
+                widget.song.title = value;
               },
               hintText: 'Title',
             ),
@@ -70,28 +78,42 @@ class _EditorState extends State<Editor> {
                     padding: const EdgeInsets.all(8.0),
                     child: quill.QuillEditor.basic(
                       controller: _controller,
-                      readOnly: false, // true for view only mode
+                      readOnly: widget.readOnly,
+
+                      // true for view only mode
                     ),
                   ),
                 ),
               ),
             ),
-            TextButton(onPressed: onSave, child: const Text('Save')),
           ],
         ),
       ),
     );
   }
 
+  void onLoad() {
+    widget.storage
+        .readContent('$title.json')
+        .then((String value) => setState(() {
+              var contentJSON = jsonDecode(value);
+              _controller = quill.QuillController(
+                  document: quill.Document.fromJson(contentJSON),
+                  selection: const TextSelection.collapsed(offset: 0));
+            }));
+  }
+
   void onSave() {
     print(title);
     List<dynamic> documentJSON = _controller.document.toDelta().toJson();
-    var json = jsonEncode(documentJSON);
+    String json = jsonEncode(documentJSON);
 
-    // JsonEncoder encoder = const JsonEncoder.withIndent('  ');
-    // String prettyprint = encoder.convert(json);
-    // print(prettyprint);
+    widget.storage.writeContent('$title.json', json);
 
+    // extractChords(documentJSON);
+  }
+
+  void extractChords(List<dynamic> documentJSON) {
     for (var i = 0; i < documentJSON.length; i++) {
       var attributes = documentJSON[i]['attributes'];
       var insert = documentJSON[i]['insert'] as String;
