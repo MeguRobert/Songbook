@@ -1,6 +1,10 @@
+// ignore_for_file: avoid_print
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
-import 'package:hello_word/tools/local_storage.dart';
+import 'package:hello_word/tools/editorControoler.dart';
 import 'package:hello_word/widgets/editor.dart';
 
 class SongEditor extends StatefulWidget {
@@ -12,7 +16,10 @@ class SongEditor extends StatefulWidget {
 }
 
 class _SongEditorState extends State<SongEditor> {
-  late Song song;
+  Song song = Song.empty();
+  bool submitted = false;
+  bool readOnly = false;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,7 +27,22 @@ class _SongEditorState extends State<SongEditor> {
         title: const Text('Song Editor'),
         centerTitle: true,
       ),
-      body: Editor(song, LocalStorage(), true),
+      body: Editor(song, readOnly, submitted),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          setState(() {
+            submitted = true;
+          });
+          print('save');
+
+          widget.onSave?.call(song);
+          song = Song.empty();
+          editorController.clear();
+
+          Navigator.of(context).pop();
+        },
+        child: Icon(Icons.save),
+      ),
     );
   }
 }

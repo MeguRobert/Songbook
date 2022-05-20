@@ -4,23 +4,22 @@ import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
 class LocalStorage {
-  Future<String> get _localPath async {
+  static Future<String> get _localPath async {
     final directory = await getApplicationDocumentsDirectory();
     print(directory.path);
     return directory.path;
   }
 
-  late String fileName;
+  static late String fileName;
 
-  Future<File> get _localFile async {
+  static Future<File> get _localFile async {
     final path = await _localPath;
-    final fileName = this.fileName;
-    return File('$path/$fileName');
+    return File('$path/$LocalStorage.fileName');
   }
 
-  Future<String> readContent(String fileName) async {
+  static Future<String> readContent(String fileName) async {
     try {
-      this.fileName = fileName;
+      LocalStorage.fileName = fileName;
       final file = await _localFile;
 
       // Read the file
@@ -33,8 +32,8 @@ class LocalStorage {
     }
   }
 
-  Future<File> writeContent(String fileName, String content) async {
-    this.fileName = fileName;
+  static Future<File> writeContent(String fileName, String content) async {
+    LocalStorage.fileName = fileName;
     final file = await _localFile;
 
     // Write the file
