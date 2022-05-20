@@ -27,18 +27,18 @@ class SongCard extends StatelessWidget {
                   color: Colors.green)),
           subtitle: Column(
             children: [
-              Text("Author: ${song.author}"),
-              Text("Uploader: ${song.uploader}")
+              Text("Szerző: ${song.author}"),
+              Text("Feltőltő: ${song.uploader}")
             ],
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
           ),
           leading: CircleAvatar(
               child: Text("${song.id}", style: const TextStyle(fontSize: 16))),
-          // trailing: IconButton(
-          //   icon: const Icon(Icons.delete),
-          //   onPressed: () => callback(),
-          // ),
+          trailing: IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () => onDelete(),
+          ),
         ),
       ),
     );

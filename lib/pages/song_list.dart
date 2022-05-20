@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/pages/song_editor.dart';
@@ -5,6 +7,8 @@ import 'package:hello_word/pages/song_editor.dart';
 import '../models/song.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
+import '../tools/local_storage.dart';
+import '../tools/editorControoler.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
@@ -14,45 +18,36 @@ class SongList extends StatefulWidget {
 }
 
 class _SongListState extends State<SongList> {
+  // TODO Json file
   List<Song> songs = [];
   List<Song> allSongs = [
     Song(
         id: 1,
         title: "Erőt adsz minden helyzetben",
         content: "content1",
-        author: "author42",
-        uploader: "uploader"),
-    Song(
-        id: 2,
-        title: "Minden mi él",
-        content: "content1",
-        author: "author42",
-        uploader: "uploader"),
-    Song(
-        id: 3,
-        title: "Gyönyörű nagy neved",
-        content: "content1",
-        author: "author42",
-        uploader: "uploader"),
-    Song(
-        id: 4,
-        title: "Isten arca",
-        content: "content1",
-        author: "author42",
-        uploader: "uploader"),
-    Song(
-        id: 47,
-        title: "Tisztítsd meg a szívemet",
-        content: "content1",
-        author: "author42",
-        uploader: "uploader"),
+        author: "ismeretlen",
+        uploader: "Megu Róbert"),
   ];
+
   String query = '';
+
+  late Future<String> filestream;
 
   @override
   void initState() {
     super.initState();
     songs = allSongs;
+    print('initState');
+    filestream = LocalStorage.readContent('songs.txt');
+    filestream.then((String value) {
+      var json = jsonDecode(value) as List;
+      print(json);
+      List<Song> savedSongs = json.map((e) => Song.fromJson(e)).toList();
+      setState(() {
+        songs = savedSongs;
+        allSongs = savedSongs;
+      });
+    });
   }
 
   @override
@@ -62,42 +57,22 @@ class _SongListState extends State<SongList> {
         title: const Text('Énekek'),
         centerTitle: true,
       ),
+      body: Column(
+        children: [
+          buildSearchBar(),
+          buildSongList(),
+          buildSaveListButton(),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const SongEditor()),
+            MaterialPageRoute(
+                builder: (context) => SongEditor(onSave: saveSong)),
           );
         },
         child: const Icon(Icons.add),
-      ),
-      body: Column(
-        children: [
-          buildSearchBar(),
-          Expanded(
-            child: ListView.builder(
-              itemCount: songs.length,
-              itemBuilder: (context, index) {
-                final song = songs[index];
-                return SongCard(
-                  song: song,
-                  onDelete: () {
-                    setState(() {
-                      songs.remove(song);
-                    });
-                  },
-                  onClick: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => SongDetail(song: song)),
-                    );
-                  },
-                );
-              },
-            ),
-          ),
-        ],
       ),
     );
   }
@@ -107,6 +82,47 @@ class _SongListState extends State<SongList> {
         hintText: "Keresés",
         onChanged: searchSong,
       );
+
+  Widget buildSongList() => Expanded(
+        child: ListView.builder(
+          itemCount: songs.length,
+          itemBuilder: (context, index) {
+            final song = songs[index];
+            return SongCard(
+              song: song,
+              onDelete: () {
+                print('delete');
+                setState(() {
+                  songs.remove(song);
+                });
+              },
+              onClick: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SongDetail(song: song)),
+                );
+              },
+            );
+          },
+        ),
+      );
+
+  Widget buildSaveListButton() =>
+      IconButton(onPressed: saveList, icon: Icon(Icons.save));
+
+  void saveSong(Song song) {
+    setState(() {
+      song.id = songs.length + 1;
+      songs.add(song);
+    });
+    print('songlist.saveSong');
+    print(song.title);
+
+    List<dynamic> documentJSON = editorController.document.toDelta().toJson();
+    String content = jsonEncode(documentJSON);
+    song.content = content;
+  }
 
   void searchSong(String query) {
     final queriedSongs = allSongs.where((book) {
@@ -126,5 +142,12 @@ class _SongListState extends State<SongList> {
       this.query = query;
       songs = queriedSongs;
     });
+  }
+
+  void saveList() {
+    print("songlist.saveList");
+    String json = jsonEncode(songs);
+    print(json);
+    LocalStorage.writeContent('songs.txt', json);
   }
 }
