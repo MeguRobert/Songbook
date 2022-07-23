@@ -21,6 +21,7 @@ class Editor extends StatefulWidget {
 
 class _EditorState extends State<Editor> {
   late String title;
+  late String author;
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +34,7 @@ class _EditorState extends State<Editor> {
         child: Column(
           children: [
             if (!widget.readOnly) buildTitle(),
+            if (!widget.readOnly) buildAuthor(),
             if (!widget.readOnly) QuillToolbarWidget(),
             Expanded(
               child: Padding(
@@ -64,6 +66,7 @@ class _EditorState extends State<Editor> {
     super.initState();
     EditorController.onLoad(widget.song?.content);
     title = widget.song?.title ?? '';
+    author = widget.song?.author ?? '';
   }
 
   void extractChords(List<dynamic> documentJSON) {
@@ -87,18 +90,27 @@ class _EditorState extends State<Editor> {
     }
   }
 
-  Widget buildTitle() {
-    return ControlledTextFieldWidget(
-      text: title,
-      onChanged: (value) {
-        setState(() {
-          title = value;
-        });
-        widget.song?.title = value;
-      },
-      hintText: 'Title',
-    );
-  }
+  Widget buildTitle() => ControlledTextFieldWidget(
+        text: title,
+        onChanged: (value) {
+          setState(() {
+            title = value;
+          });
+          widget.song?.title = value;
+        },
+        hintText: 'Írd be a címet',
+      );
+
+  Widget buildAuthor() => ControlledTextFieldWidget(
+        text: author,
+        onChanged: (value) {
+          setState(() {
+            author = value;
+          });
+          widget.song?.author = value;
+        },
+        hintText: 'Írd be az ének szerzőjét',
+      );
 }
 
 class QuillToolbarWidget extends StatelessWidget {

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/pages/song_editor.dart';
@@ -9,6 +10,8 @@ import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
 import '../tools/editorControoler.dart';
+
+import 'package:firebase_core/firebase_core.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
@@ -20,14 +23,7 @@ class SongList extends StatefulWidget {
 class _SongListState extends State<SongList> {
   // TODO Json file
   List<Song> songs = [];
-  List<Song> allSongs = [
-    Song(
-        id: 1,
-        title: "Erőt adsz minden helyzetben",
-        content: "content1",
-        author: "ismeretlen",
-        uploader: "Megu Róbert"),
-  ];
+  List<Song> allSongs = [];
 
   String query = '';
 
@@ -36,18 +32,23 @@ class _SongListState extends State<SongList> {
   @override
   void initState() {
     super.initState();
-    songs = allSongs;
+
     print('initState');
-    filestream = LocalStorage.readContent('songs.txt');
-    filestream.then((String value) {
-      var json = jsonDecode(value) as List;
-      print(json);
-      List<Song> savedSongs = json.map((e) => Song.fromJson(e)).toList();
-      setState(() {
-        songs = savedSongs;
-        allSongs = savedSongs;
-      });
-    });
+    // filestream = LocalStorage.readContent('songs.txt');
+    // filestream.then((String value) {
+    //   var json = jsonDecode(value) as List;
+    //   print(json);
+    //   List<Song> savedSongs = json.map((e) => Song.fromJson(e)).toList();
+    //   setState(() {
+    //     songs = savedSongs;
+    //     allSongs = savedSongs;
+    //   });
+    // });
+    // Stream<List<Song>> savedSongs = getSongs();
+    // setState(() {
+    //   songs = savedSongs;
+    //   allSongs = savedSongs;
+    // });
   }
 
   @override
@@ -96,7 +97,7 @@ class _SongListState extends State<SongList> {
                   songs.remove(song);
                 });
               },
-              onClick: () {
+              onTap: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
@@ -122,7 +123,23 @@ class _SongListState extends State<SongList> {
     List<dynamic> documentJSON = editorController.document.toDelta().toJson();
     String content = jsonEncode(documentJSON);
     song.content = content;
+    saveSongToFirebase(song);
   }
+
+  Future saveSongToFirebase(Song song) async {
+    print('songlist.saveSongToFirebase');
+    final docSong = await FirebaseFirestore.instance
+        .collection('songs')
+        .doc(song.id.toString());
+
+    await docSong.set(song.toJson());
+  }
+
+  Stream<List<Song>> getSongs() => FirebaseFirestore.instance
+      .collection('songs')
+      .snapshots()
+      .map((snapshot) =>
+          snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList());
 
   void searchSong(String query) {
     final queriedSongs = allSongs.where((book) {

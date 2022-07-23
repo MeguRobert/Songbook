@@ -17,7 +17,7 @@ class Song {
     return 'Song{title: $title, content: $content, author: $author, uploader: $uploader, id: $id}';
   }
 
-  Map toJson() => {
+  Map<String, dynamic> toJson() => {
         'id': id,
         'title': title,
         'content': content,

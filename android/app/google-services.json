@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "826651027450",
+    "project_id": "megu-firebase-auth",
+    "storage_bucket": "megu-firebase-auth.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:826651027450:android:edc9e6e69cf873c7902643",
+        "android_client_info": {
+          "package_name": "com.worship.songbook"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "826651027450-e6b52bvr5qcbvjoeb797cgvhmuvpnosh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDYLDbS48TVig21TzzPUkBAQgSKuclmRYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "826651027450-e6b52bvr5qcbvjoeb797cgvhmuvpnosh.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
