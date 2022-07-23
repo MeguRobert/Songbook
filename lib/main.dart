@@ -1,9 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/home.dart';
 import 'package:hello_word/pages/loading.dart';
+import 'package:hello_word/pages/login.dart';
+import 'package:hello_word/pages/register.dart';
 import 'package:hello_word/pages/song_list.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:hello_word/pages/song_list2.dart';
+import 'firebase_options.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
 }
 
@@ -14,91 +23,43 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Megu',
+        title: 'Keresztyén Énekeskönyv',
         theme: ThemeData(
           primarySwatch: Colors.green,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        initialRoute: '/songlist',
+        initialRoute: '/',
         routes: {
-          '/': (BuildContext context) => Loading(),
+          '/': (BuildContext context) => MainPage(),
           '/home': (BuildContext context) => Home(),
-          '/songlist': (BuildContext context) => SongList(),
+          '/songlist': (BuildContext context) => SongList2(),
+          '/auth/registration': (BuildContext context) => Registration(),
+          '/auth/login': (BuildContext context) => Login(),
         });
   }
 }
 
-class HomePage extends StatefulWidget {
-  const HomePage({Key? key}) : super(key: key);
+class MainPage extends StatefulWidget {
+  const MainPage({Key? key}) : super(key: key);
 
   @override
-  _HomePageState createState() => _HomePageState();
+  State<MainPage> createState() => _MainPageState();
 }
 
-class _HomePageState extends State<HomePage> {
-  String text = '';
-
-  void changeText(String text) {
-    setState(() {
-      this.text = text;
-    });
-  }
-
+class _MainPageState extends State<MainPage> {
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(
-          title: const Text('Megu'),
-          backgroundColor: HexColor.fromHex('#00BFA5'),
+  Widget build(BuildContext context) => Scaffold(
+        body: StreamBuilder<User?>(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
+            if (snapshot.hasData) {
+              return Home();
+            } else {
+              return Login();
+            }
+          },
         ),
-        body: Column(children: <Widget>[
-          TextInputWidget(changeText),
-          Text(text),
-        ]));
-  }
-}
-
-class TextInputWidget extends StatefulWidget {
-  final Function(String) callback;
-
-  const TextInputWidget(this.callback);
-
-  @override
-  _TextInputWidgetState createState() => _TextInputWidgetState();
-}
-
-class _TextInputWidgetState extends State<TextInputWidget> {
-  final TextEditingController controller = TextEditingController();
-
-  @override
-  void dispose() {
-    super.dispose();
-    controller.dispose();
-  }
-
-  void onPress() {
-    widget.callback(controller.text);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        TextField(
-          controller: controller,
-          decoration: InputDecoration(
-              prefixIcon: const Icon(Icons.message),
-              labelText: 'Message',
-              suffixIcon: IconButton(
-                  icon: const Icon(Icons.send),
-                  // splashColor: Colors.blueAccent,
-
-                  onPressed: onPress)),
-          // onChanged: (String value) => changeText(value),
-        ),
-      ],
-    );
-  }
+      );
 }
 
 extension HexColor on Color {

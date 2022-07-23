@@ -1,4 +1,4 @@
-package com.example.hello_word
+package com.worship.songbook
 
 import io.flutter.embedding.android.FlutterActivity
 
