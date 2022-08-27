@@ -13,6 +13,9 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+    String userName = _auth.currentUser?.displayName ?? 'Felhasználó';
+    String welcomeMessage = 'Dícsérjük az Urat, $userName!';
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Főmenü'),
@@ -23,10 +26,10 @@ class _HomeState extends State<Home> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Padding(
-            padding: const EdgeInsets.all(100.0),
+            padding: const EdgeInsets.fromLTRB(50, 100, 50, 50),
             child: Text(
-              _auth.isAuthenticated ? 'Bejelentkezve' : 'Nincs bejelentkezve',
-              style: TextStyle(fontSize: 25),
+              welcomeMessage,
+              style: const TextStyle(fontSize: 25),
             ),
           ),
           ElevatedButton(
@@ -36,28 +39,34 @@ class _HomeState extends State<Home> {
               child: Container(
                 height: 100,
                 width: 200,
-                child: Center(
+                child: const Center(
                     child: Text(
                   'Énekek',
-                  style: new TextStyle(
+                  style: TextStyle(
                     fontSize: 30.0,
                     // color: Colors.yellow,
                   ),
                 )),
               )),
-          TextButton(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Kijelentkezés"),
-                const Icon(Icons.logout),
-              ],
+          Expanded(
+              child: Align(
+            alignment: Alignment.bottomCenter,
+            child: Container(
+              margin: const EdgeInsets.only(bottom: 20.0),
+              child: TextButton(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    Text("Kijelentkezés"),
+                    Icon(Icons.logout),
+                  ],
+                ),
+                onPressed: () async {
+                  await _auth.signOut();
+                },
+              ),
             ),
-            onPressed: () async {
-              await _auth.signOut();
-              // Navigator.pushNamed(context, '/home');
-            },
-          ),
+          ))
         ],
       ),
     );

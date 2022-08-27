@@ -7,6 +7,7 @@ import 'package:hello_word/pages/song_editor.dart';
 
 import '../models/song.dart';
 import '../services/auth.dart';
+import '../tools/show_error_dialog.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
@@ -84,6 +85,7 @@ class _SongList2State extends State<SongList2> {
           }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          editorController.clear();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -131,6 +133,8 @@ class _SongList2State extends State<SongList2> {
 
   void saveSong(Song song) async {
     List<dynamic> documentJSON = editorController.document.toDelta().toJson();
+    var contentIsEmpty =
+        RegExp(r'^(\n|\s)+$').hasMatch(documentJSON[0]['insert']);
     String content = jsonEncode(documentJSON);
     QuerySnapshot snapshot = await songs.orderBy("id", descending: true).get();
     if (snapshot.docs.isEmpty) {
@@ -141,10 +145,26 @@ class _SongList2State extends State<SongList2> {
       song.id = lastSong.id + 1;
     }
 
-    song.content = content;
+    song.content = contentIsEmpty ? '' : content;
     song.uploader = _auth.currentUser!.displayName.toString();
-    final docSong = songs.doc(song.id.toString());
-    await docSong.set(song.toJson());
+
+    if (song.title.isEmpty) {
+      MessageHub.showErrorMessage(
+          context, 'Hiba', 'Nem adtad meg az ének címét!');
+    } else if (song.content.isEmpty) {
+      MessageHub.showErrorMessage(
+          context, 'Hiba', 'Nem adtad meg az ének szövegét!');
+    } else if (song.title.isNotEmpty && song.content.isNotEmpty) {
+      // search for song with the same title
+      snapshot = await songs.where('title', isEqualTo: song.title).get();
+      if (snapshot.docs.isNotEmpty) {
+        MessageHub.showErrorMessage(
+            context, 'Hiba', 'Már van ilyen című ének!');
+      } else {
+        final docSong = songs.doc(song.id.toString());
+        await docSong.set(song.toJson());
+      }
+    }
   }
 
   Stream<List<Song>> getSongs() => FirebaseFirestore.instance
@@ -166,11 +186,6 @@ class _SongList2State extends State<SongList2> {
           uploaderLower.startsWith(searchLower) ||
           number.startsWith(searchLower);
     });
-
-    // setState(() {
-    //   this.query = query;
-    //   songs = queriedSongs;
-    // });
   }
 
   void saveList() {

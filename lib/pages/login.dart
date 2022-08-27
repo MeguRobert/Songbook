@@ -210,6 +210,19 @@ class _LoginState extends State<Login> {
                 );
               },
             );
+          } else if (registrationResponse is Exception) {
+            // show error message
+            showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text('Hiba'),
+                  content: Text(registrationResponse
+                      .toString()
+                      .replaceFirst('Exception:', "")),
+                );
+              },
+            );
           }
         },
       );
