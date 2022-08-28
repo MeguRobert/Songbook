@@ -8,6 +8,7 @@ import 'package:hello_word/pages/song_list.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hello_word/pages/song_list2.dart';
+import 'package:hello_word/pages/verify_email.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -53,7 +54,7 @@ class _MainPageState extends State<MainPage> {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
             if (snapshot.hasData) {
-              return Home();
+              return VerifyEmailPage();
             } else {
               return Login();
             }
