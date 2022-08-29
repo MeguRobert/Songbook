@@ -21,12 +21,29 @@ class _LoginState extends State<Login> {
 
   bool isLogin = true;
   bool showRegistrationbutton = false;
+  bool showForgetPasswordButton = false;
 
   void _handleTapRegisterInsteadButton() {
     setState(() {
       isLogin = !isLogin;
       showRegistrationbutton = !showRegistrationbutton;
     });
+  }
+
+  Future _handleTapForgetPasswordButton() async {
+    // call change password from firebase
+    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Elfelejtett jelszó'),
+          content: Text(
+              'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltozni!\n\nLehetséges, hogy emailünk a SPAM mappába került.'),
+        );
+      },
+    );
   }
 
   @override
@@ -93,6 +110,7 @@ class _LoginState extends State<Login> {
               TextButton(
                   onPressed: _handleTapRegisterInsteadButton,
                   child: Text('Regisztrálok')),
+            if (showForgetPasswordButton) _forgetPasswordButton()
           ],
         ),
       ),
@@ -129,10 +147,15 @@ class _LoginState extends State<Login> {
                     'A felhasználó nem található! Kéjük próbálja újra, vagy regisztráljon!';
                 setState(() {
                   showRegistrationbutton = true;
+                  showRegistrationbutton = false;
                 });
                 break;
               case 'wrong-password':
                 errorMessage = 'Hibás jelszó';
+                setState(() {
+                  showForgetPasswordButton = true;
+                  showRegistrationbutton = false;
+                });
                 break;
               case 'invalid-email':
                 errorMessage = 'Hibás email cím';
@@ -141,6 +164,7 @@ class _LoginState extends State<Login> {
                 errorMessage = 'Ismeretlen hiba';
                 setState(() {
                   showRegistrationbutton = true;
+                  showForgetPasswordButton = false;
                 });
                 break;
             }
@@ -226,4 +250,8 @@ class _LoginState extends State<Login> {
           }
         },
       );
+
+  Widget _forgetPasswordButton() => TextButton(
+      onPressed: _handleTapForgetPasswordButton,
+      child: Text('Elfelejtettem a jelszavam'));
 }
