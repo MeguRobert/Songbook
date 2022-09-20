@@ -5,7 +5,7 @@ import 'package:hello_word/pages/login.dart';
 import 'package:hello_word/pages/register.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hello_word/pages/song_list2.dart';
+import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/pages/verify_email.dart';
 
 void main() async {
@@ -30,7 +30,7 @@ class MyApp extends StatelessWidget {
         routes: {
           '/': (BuildContext context) => const MainPage(),
           '/home': (BuildContext context) => const Home(),
-          '/songlist': (BuildContext context) => const SongList2(),
+          '/songlist': (BuildContext context) => const SongList(),
           '/auth/registration': (BuildContext context) => const Registration(),
           '/auth/login': (BuildContext context) => const Login(),
         });
