@@ -8,12 +8,11 @@ import 'package:hello_word/pages/song_editor.dart';
 import '../models/song.dart';
 import '../services/auth.dart';
 import '../tools/show_error_dialog.dart';
+import '../widgets/editor.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
 import '../tools/editorControoler.dart';
-
-import 'package:firebase_core/firebase_core.dart';
 
 class SongList2 extends StatefulWidget {
   const SongList2({Key? key}) : super(key: key);
@@ -72,7 +71,7 @@ class _SongList2State extends State<SongList2> {
                 },
               );
             } else {
-              return Center(
+              return const Center(
                 child: CircularProgressIndicator(),
               );
             }

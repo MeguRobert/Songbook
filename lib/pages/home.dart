@@ -36,10 +36,10 @@ class _HomeState extends State<Home> {
               onPressed: () => _auth.isAuthenticated
                   ? Navigator.pushNamed(context, '/songlist')
                   : null,
-              child: Container(
+              child: const SizedBox(
                 height: 100,
                 width: 200,
-                child: const Center(
+                child: Center(
                     child: Text(
                   'Énekek',
                   style: TextStyle(

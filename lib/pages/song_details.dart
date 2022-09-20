@@ -12,13 +12,24 @@ class SongDetail extends StatefulWidget {
 }
 
 class _SongDetailState extends State<SongDetail> {
+  final GlobalKey<EditorState> _editorStateKey = GlobalKey<EditorState>();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text(widget.song.title),
-          centerTitle: true,
-        ),
-        body: Editor(widget.song, true, true));
+      appBar: AppBar(
+        title: Text(widget.song.title),
+        centerTitle: true,
+      ),
+      body: Editor(
+        widget.song,
+        true,
+        true,
+        key: _editorStateKey,
+      ),
+      floatingActionButton: FloatingActionButton(onPressed: () {
+        _editorStateKey.currentState?.toggleScrolling();
+      }),
+    );
   }
 }

@@ -11,8 +11,6 @@ import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
 import '../tools/editorControoler.dart';
 
-import 'package:firebase_core/firebase_core.dart';
-
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
 
@@ -110,7 +108,7 @@ class _SongListState extends State<SongList> {
       );
 
   Widget buildSaveListButton() =>
-      IconButton(onPressed: saveList, icon: Icon(Icons.save));
+      IconButton(onPressed: saveList, icon: const Icon(Icons.save));
 
   void saveSong(Song song) {
     setState(() {
