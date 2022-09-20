@@ -14,6 +14,8 @@ class SongDetail extends StatefulWidget {
 class _SongDetailState extends State<SongDetail> {
   final GlobalKey<EditorState> _editorStateKey = GlobalKey<EditorState>();
 
+  IconData icon = Icons.arrow_right;
+  double iconSize = 50;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,9 +29,21 @@ class _SongDetailState extends State<SongDetail> {
         true,
         key: _editorStateKey,
       ),
-      floatingActionButton: FloatingActionButton(onPressed: () {
-        _editorStateKey.currentState?.toggleScrolling();
-      }),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          _editorStateKey.currentState?.toggleScrolling();
+          setState(() {
+            if (_editorStateKey.currentState!.scroll) {
+              icon = Icons.stop;
+              iconSize = 30;
+            } else {
+              icon = Icons.arrow_right;
+              iconSize = 50;
+            }
+          });
+        },
+        child: Icon(icon, size: iconSize),
+      ),
     );
   }
 }
