@@ -26,7 +26,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
     if (!isEmailVerified) {
       sendEmailVerification();
 
-      timer = Timer.periodic(Duration(seconds: 3), (_) => checkEmailVerified());
+      timer = Timer.periodic(const Duration(seconds: 3), (_) => checkEmailVerified());
     }
   }
 
@@ -45,7 +45,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
             title: const Text("Verify Email"),
           ),
           body: Padding(
-            padding: EdgeInsets.all(16),
+            padding: const EdgeInsets.all(16),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
               const Text(
@@ -55,17 +55,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
-                icon: Icon(Icons.email, size: 32),
+                icon: const Icon(Icons.email, size: 32),
                 label:
-                    Text('Email újraküldése', style: TextStyle(fontSize: 24)),
+                    const Text('Email újraküldése', style: TextStyle(fontSize: 24)),
                 style:
-                    ElevatedButton.styleFrom(minimumSize: Size.fromHeight(50)),
+                    ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
                 onPressed: canResendEmail ? sendEmailVerification : null,
               ),
               TextButton(
-                child: Text('Visszavonás', style: TextStyle(fontSize: 24)),
+                child: const Text('Visszavonás', style: const TextStyle(fontSize: 24)),
                 style:
-                    ElevatedButton.styleFrom(minimumSize: Size.fromHeight(50)),
+                    ElevatedButton.styleFrom(minimumSize: const Size.fromHeight(50)),
                 onPressed: () => FirebaseAuth.instance.signOut(),
               )
             ]),
@@ -78,7 +78,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await user.sendEmailVerification();
 
       setState(() => canResendEmail = false);
-      await Future.delayed(Duration(seconds: 10));
+      await Future.delayed(const Duration(seconds: 10));
       setState(() => canResendEmail = true);
     } on Exception catch (e) {
       MessageHub.showErrorMessage(

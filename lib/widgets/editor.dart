@@ -1,5 +1,7 @@
 // ignore_for_file: avoid_print
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:hello_word/widgets/controlled_text_field_widget.dart';
@@ -16,12 +18,38 @@ class Editor extends StatefulWidget {
       : super(key: key);
 
   @override
-  State<Editor> createState() => _EditorState();
+  State<Editor> createState() => EditorState();
 }
 
-class _EditorState extends State<Editor> {
+class EditorState extends State<Editor> {
+  final ScrollController _scrollController = ScrollController();
+  bool scroll = false;
   late String title;
   late String author;
+  int speedFactor = 10;
+
+  _scroll() {
+    double maxExtent = _scrollController.position.maxScrollExtent;
+    double distanceDifference = maxExtent - _scrollController.offset;
+    double durationDouble = distanceDifference / speedFactor;
+
+    _scrollController.animateTo(_scrollController.position.maxScrollExtent,
+        duration: Duration(seconds: durationDouble.toInt()),
+        curve: Curves.linear);
+  }
+
+  toggleScrolling() {
+    setState(() {
+      scroll = !scroll;
+    });
+
+    if (scroll) {
+      _scroll();
+    } else {
+      _scrollController.animateTo(_scrollController.offset,
+          duration: Duration(seconds: 1), curve: Curves.linear);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -36,20 +64,34 @@ class _EditorState extends State<Editor> {
             if (!widget.readOnly) buildTitle(),
             if (!widget.readOnly) buildAuthor(),
             if (!widget.readOnly) QuillToolbarWidget(),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8),
-                child: Container(
-                  decoration: BoxDecoration(
-                    // border: Border.all(color: Colors.black),
-                    borderRadius: BorderRadius.circular(8),
-                    color: Colors.white,
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: quill.QuillEditor.basic(
-                      controller: editorController,
-                      readOnly: widget.readOnly, // true for view only mode
+            NotificationListener(
+              onNotification: (notif) {
+                if (notif is ScrollEndNotification && scroll) {
+                  Timer(Duration(seconds: 1), () {
+                    _scroll();
+                  });
+                }
+
+                return true;
+              },
+              child: Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      // border: Border.all(color: Colors.black),
+                      borderRadius: BorderRadius.circular(8),
+                      color: Colors.white,
+                    ),
+                    child: SingleChildScrollView(
+                      controller: _scrollController,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: quill.QuillEditor.basic(
+                          controller: editorController,
+                          readOnly: widget.readOnly, // true for view only mode
+                        ),
+                      ),
                     ),
                   ),
                 ),

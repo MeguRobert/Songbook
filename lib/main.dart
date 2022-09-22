@@ -1,15 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/home.dart';
-import 'package:hello_word/pages/loading.dart';
 import 'package:hello_word/pages/login.dart';
 import 'package:hello_word/pages/register.dart';
-import 'package:hello_word/pages/song_list.dart';
 
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hello_word/pages/song_list2.dart';
+import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/pages/verify_email.dart';
-import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,11 +28,11 @@ class MyApp extends StatelessWidget {
         ),
         initialRoute: '/',
         routes: {
-          '/': (BuildContext context) => MainPage(),
-          '/home': (BuildContext context) => Home(),
-          '/songlist': (BuildContext context) => SongList2(),
-          '/auth/registration': (BuildContext context) => Registration(),
-          '/auth/login': (BuildContext context) => Login(),
+          '/': (BuildContext context) => const MainPage(),
+          '/home': (BuildContext context) => const Home(),
+          '/songlist': (BuildContext context) => const SongList(),
+          '/auth/registration': (BuildContext context) => const Registration(),
+          '/auth/login': (BuildContext context) => const Login(),
         });
   }
 }
@@ -54,9 +51,9 @@ class _MainPageState extends State<MainPage> {
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (BuildContext context, AsyncSnapshot<User?> snapshot) {
             if (snapshot.hasData) {
-              return VerifyEmailPage();
+              return const VerifyEmailPage();
             } else {
-              return Login();
+              return const Login();
             }
           },
         ),

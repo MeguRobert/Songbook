@@ -37,7 +37,7 @@ class _LoginState extends State<Login> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        return AlertDialog(
+        return const AlertDialog(
           title: Text('Elfelejtett jelszó'),
           content: Text(
               'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltozni!\n\nLehetséges, hogy emailünk a SPAM mappába került.'),
@@ -55,13 +55,13 @@ class _LoginState extends State<Login> {
       ),
       // login form in body
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
         child: Column(
           children: [
             if (!isLogin)
               TextField(
                 controller: userNameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Felhasználónév',
                   labelStyle: TextStyle(
                     color: Colors.grey,
@@ -74,7 +74,7 @@ class _LoginState extends State<Login> {
               ),
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(
                   color: Colors.grey,
@@ -85,12 +85,12 @@ class _LoginState extends State<Login> {
                 email = value;
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Jelszó',
                 labelStyle: TextStyle(
                   color: Colors.grey,
@@ -102,14 +102,14 @@ class _LoginState extends State<Login> {
                 password = value;
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 40.0,
             ),
             isLogin ? _loginButton() : _registerButton(),
             if (isLogin && showRegistrationbutton)
               TextButton(
                   onPressed: _handleTapRegisterInsteadButton,
-                  child: Text('Regisztrálok')),
+                  child: const Text('Regisztrálok')),
             if (showForgetPasswordButton) _forgetPasswordButton()
           ],
         ),
@@ -118,7 +118,7 @@ class _LoginState extends State<Login> {
   }
 
   Widget _loginButton() => TextButton(
-        child: Text('Bejelentkezés'),
+        child: const Text('Bejelentkezés'),
         onPressed: () async {
           // sign in with email and password
           dynamic signInResponse =
@@ -131,7 +131,7 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Felhasználói adatok'),
+                  title: const Text('Felhasználói adatok'),
                   content: Text(signInResponse.displayName ?? 'Felhasználó'),
                 );
               },
@@ -173,7 +173,7 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Hiba'),
+                  title: const Text('Hiba'),
                   content: Text(errorMessage),
                 );
               },
@@ -183,7 +183,7 @@ class _LoginState extends State<Login> {
       );
 
   _registerButton() => TextButton(
-        child: Text('Regisztráció'),
+        child: const Text('Regisztráció'),
         onPressed: () async {
           // sign in with email and password
           dynamic registrationResponse = await _auth
@@ -196,7 +196,7 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Felhasználói adatok'),
+                  title: const Text('Felhasználói adatok'),
                   content:
                       Text(registrationResponse.displayName ?? 'Felhasználó'),
                 );
@@ -229,7 +229,7 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Hiba'),
+                  title: const Text('Hiba'),
                   content: Text(errorMessage),
                 );
               },
@@ -240,7 +240,7 @@ class _LoginState extends State<Login> {
               context: context,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text('Hiba'),
+                  title: const Text('Hiba'),
                   content: Text(registrationResponse
                       .toString()
                       .replaceFirst('Exception:', "")),
@@ -253,5 +253,5 @@ class _LoginState extends State<Login> {
 
   Widget _forgetPasswordButton() => TextButton(
       onPressed: _handleTapForgetPasswordButton,
-      child: Text('Elfelejtettem a jelszavam'));
+      child: const Text('Elfelejtettem a jelszavam'));
 }

@@ -22,16 +22,16 @@ class _RegistrationState extends State<Registration> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Regisztráció'),
+        title: const Text('Regisztráció'),
       ),
       // login form in body
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
+        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 50.0),
         child: Column(
           children: [
             TextField(
               controller: userNameController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'User Name',
                 labelStyle: TextStyle(
                   color: Colors.grey,
@@ -42,10 +42,10 @@ class _RegistrationState extends State<Registration> {
                 userName = value;
               },
             ),
-            SizedBox(height: 20.0),
+            const SizedBox(height: 20.0),
             TextField(
               controller: emailController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Email',
                 labelStyle: TextStyle(
                   color: Colors.grey,
@@ -56,12 +56,12 @@ class _RegistrationState extends State<Registration> {
                 email = value;
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 20.0,
             ),
             TextField(
               controller: passwordController,
-              decoration: InputDecoration(
+              decoration: const InputDecoration(
                 labelText: 'Password',
                 labelStyle: TextStyle(
                   color: Colors.grey,
@@ -73,11 +73,11 @@ class _RegistrationState extends State<Registration> {
                 password = value;
               },
             ),
-            SizedBox(
+            const SizedBox(
               height: 40.0,
             ),
             TextButton(
-              child: Text('Regisztráció'),
+              child: const Text('Regisztráció'),
               onPressed: () async {
                 // sign in with email and password
                 await _auth.registerWithEmailAndPassword(
@@ -85,7 +85,7 @@ class _RegistrationState extends State<Registration> {
                 showDialog(
                   context: context,
                   builder: (BuildContext context) {
-                    return AlertDialog(
+                    return const AlertDialog(
                       title: Text('Token'),
                       // content: Text(token),
                     );

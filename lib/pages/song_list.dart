@@ -6,12 +6,12 @@ import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/pages/song_editor.dart';
 
 import '../models/song.dart';
+import '../services/auth.dart';
+import '../tools/show_error_dialog.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
 import '../tools/editorControoler.dart';
-
-import 'package:firebase_core/firebase_core.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
@@ -21,35 +21,13 @@ class SongList extends StatefulWidget {
 }
 
 class _SongListState extends State<SongList> {
-  // TODO Json file
-  List<Song> songs = [];
-  List<Song> allSongs = [];
+  final AuthService _auth = AuthService();
+  final CollectionReference songs =
+      FirebaseFirestore.instance.collection('songs');
+
+  int length = 0;
 
   String query = '';
-
-  late Future<String> filestream;
-
-  @override
-  void initState() {
-    super.initState();
-
-    print('initState');
-    // filestream = LocalStorage.readContent('songs.txt');
-    // filestream.then((String value) {
-    //   var json = jsonDecode(value) as List;
-    //   print(json);
-    //   List<Song> savedSongs = json.map((e) => Song.fromJson(e)).toList();
-    //   setState(() {
-    //     songs = savedSongs;
-    //     allSongs = savedSongs;
-    //   });
-    // });
-    // Stream<List<Song>> savedSongs = getSongs();
-    // setState(() {
-    //   songs = savedSongs;
-    //   allSongs = savedSongs;
-    // });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -58,15 +36,54 @@ class _SongListState extends State<SongList> {
         title: const Text('Énekek'),
         centerTitle: true,
       ),
-      body: Column(
-        children: [
-          buildSearchBar(),
-          buildSongList(),
-          buildSaveListButton(),
-        ],
-      ),
+      body: StreamBuilder(
+          stream: songs.orderBy('id', descending: false).snapshots(),
+          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+            if (snapshot.hasData) {
+              length = snapshot.data!.docs.length;
+
+              return ListView.builder(
+                itemCount: length,
+                itemBuilder: (context, index) {
+                  final DocumentSnapshot document = snapshot.data!.docs[index];
+                  try {
+                    final Song song = Song.fromJson(document.data());
+                    return SongCard(
+                      song: song,
+                      onDelete: () {
+                        setState(() {
+                          songs.doc(document.id).delete();
+                        });
+                      },
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => SongDetail(song: song)),
+                        );
+                      },
+                    );
+                  } catch (e) {
+                    print(e);
+                  }
+                  return Container();
+                },
+              );
+            } else {
+              return const Center(
+                child: CircularProgressIndicator(),
+              );
+            }
+
+            return Column(
+              children: [
+                buildSearchBar(),
+              ],
+            );
+          }),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
+          editorController.clear();
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -84,55 +101,68 @@ class _SongListState extends State<SongList> {
         onChanged: searchSong,
       );
 
-  Widget buildSongList() => Expanded(
-        child: ListView.builder(
-          itemCount: songs.length,
-          itemBuilder: (context, index) {
-            final song = songs[index];
-            return SongCard(
-              song: song,
-              onDelete: () {
-                print('delete');
-                setState(() {
-                  songs.remove(song);
-                });
-              },
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SongDetail(song: song)),
-                );
-              },
-            );
-          },
-        ),
-      );
+  // Widget buildSongList() => Expanded(
+  //       child: ListView.builder(
+  //         itemCount: songs.length,
+  //         itemBuilder: (context, index) {
+  //           final song = songs[index];
+  //           return SongCard(
+  //             song: song,
+  //             onDelete: () {
+  //               print('delete');
+  //               setState(() {
+  //                 songs.remove(song);
+  //               });
+  //             },
+  //             onTap: () {
+  //               Navigator.push(
+  //                 context,
+  //                 MaterialPageRoute(
+  //                     builder: (context) => SongDetail(song: song)),
+  //               );
+  //             },
+  //           );
+  //         },
+  //       ),
+  //     );
 
-  Widget buildSaveListButton() =>
-      IconButton(onPressed: saveList, icon: Icon(Icons.save));
+  // Widget buildSaveListButton() =>
+  //     IconButton(onPressed: saveList, icon: Icon(Icons.save));
 
-  void saveSong(Song song) {
-    setState(() {
-      song.id = songs.length + 1;
-      songs.add(song);
-    });
-    print('songlist.saveSong');
-    print(song.title);
-
+  void saveSong(Song song) async {
     List<dynamic> documentJSON = editorController.document.toDelta().toJson();
+    var contentIsEmpty =
+        RegExp(r'^(\n|\s)+$').hasMatch(documentJSON[0]['insert']);
     String content = jsonEncode(documentJSON);
-    song.content = content;
-    saveSongToFirebase(song);
-  }
+    QuerySnapshot snapshot = await songs.orderBy("id", descending: true).get();
+    if (snapshot.docs.isEmpty) {
+      song.id = 1;
+    } else {
+      Object? doc = snapshot.docs[0].data();
+      Song lastSong = Song.fromJson(doc);
+      song.id = lastSong.id + 1;
+    }
 
-  Future saveSongToFirebase(Song song) async {
-    print('songlist.saveSongToFirebase');
-    final docSong = await FirebaseFirestore.instance
-        .collection('songs')
-        .doc(song.id.toString());
+    song.content = contentIsEmpty ? '' : content;
+    song.uploader = _auth.currentUser!.displayName.toString();
 
-    await docSong.set(song.toJson());
+    if (song.title.isEmpty) {
+      MessageHub.showErrorMessage(
+          context, 'Hiba', 'Nem adtad meg az ének címét!');
+    } else if (song.content.isEmpty) {
+      MessageHub.showErrorMessage(
+          context, 'Hiba', 'Nem adtad meg az ének szövegét!');
+    } else if (song.title.isNotEmpty && song.content.isNotEmpty) {
+      // search for song with the same title
+      snapshot = await songs.where('title', isEqualTo: song.title).get();
+      if (snapshot.docs.isNotEmpty) {
+        MessageHub.showErrorMessage(
+            context, 'Hiba', 'Már van ilyen című ének!');
+      } else {
+        final docSong = songs.doc(song.id.toString());
+        await docSong.set(song.toJson());
+      }
+    }
   }
 
   Stream<List<Song>> getSongs() => FirebaseFirestore.instance
@@ -142,7 +172,7 @@ class _SongListState extends State<SongList> {
           snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList());
 
   void searchSong(String query) {
-    final queriedSongs = allSongs.where((book) {
+    final queriedSongs = songs.where((book) {
       final number = book.id.toString();
       final titleLower = book.title.toLowerCase();
       final authorLower = book.author.toLowerCase();
@@ -153,11 +183,6 @@ class _SongListState extends State<SongList> {
           authorLower.startsWith(searchLower) ||
           uploaderLower.startsWith(searchLower) ||
           number.startsWith(searchLower);
-    }).toList();
-
-    setState(() {
-      this.query = query;
-      songs = queriedSongs;
     });
   }
 
