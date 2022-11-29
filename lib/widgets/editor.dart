@@ -23,12 +23,13 @@ class Editor extends StatefulWidget {
 
 class EditorState extends State<Editor> {
   final ScrollController _scrollController = ScrollController();
-  bool scroll = false;
+  bool isScrolling = false;
   late String title;
   late String author;
-  int speedFactor = 10;
+  double speedFactor = 10;
+  ValueNotifier<bool> _speedFactorChanged = ValueNotifier(false);
 
-  _scroll() {
+  scroll() {
     double maxExtent = _scrollController.position.maxScrollExtent;
     double distanceDifference = maxExtent - _scrollController.offset;
     double durationDouble = distanceDifference / speedFactor;
@@ -40,11 +41,11 @@ class EditorState extends State<Editor> {
 
   toggleScrolling() {
     setState(() {
-      scroll = !scroll;
+      isScrolling = !isScrolling;
     });
 
-    if (scroll) {
-      _scroll();
+    if (isScrolling) {
+      scroll();
     } else {
       _scrollController.animateTo(_scrollController.offset,
           duration: Duration(seconds: 1), curve: Curves.linear);
@@ -66,9 +67,9 @@ class EditorState extends State<Editor> {
             if (!widget.readOnly) QuillToolbarWidget(),
             NotificationListener(
               onNotification: (notif) {
-                if (notif is ScrollEndNotification && scroll) {
-                  Timer(Duration(seconds: 1), () {
-                    _scroll();
+                if (notif is ScrollEndNotification && isScrolling) {
+                  Timer(Duration(milliseconds: 250), () {
+                    scroll();
                   });
                 }
 

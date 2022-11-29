@@ -3,23 +3,25 @@
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/tools/editorControoler.dart';
+import 'package:hello_word/tools/validate.dart';
 import 'package:hello_word/widgets/editor.dart';
 
 class SongEditor extends StatefulWidget {
+  const SongEditor({Key? key, this.song, this.onSave}) : super(key: key);
   final Function(Song)? onSave;
-  const SongEditor({Key? key, this.onSave}) : super(key: key);
+  final Song? song;
 
   @override
   State<SongEditor> createState() => _SongEditorState();
 }
 
 class _SongEditorState extends State<SongEditor> {
-  Song song = Song.empty();
-  bool submitted = false;
-  bool readOnly = false;
-
   @override
   Widget build(BuildContext context) {
+    Song song = widget.song ?? Song.empty();
+    bool submitted = false;
+    bool readOnly = false;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Song Editor'),
@@ -33,8 +35,7 @@ class _SongEditorState extends State<SongEditor> {
           });
           print('save');
 
-          widget.onSave?.call(song);
-          song = Song.empty();
+          widget.onSave?.call(Parser.parseContent(song));
           editorController.clear();
 
           Navigator.of(context).pop();
