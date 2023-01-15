@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:hello_word/models/song.dart';
 
 import '../services/auth.dart';
-import 'package:hello_word/tools/editorControoler.dart';
+import 'package:hello_word/tools/editorController.dart';
 
 class Parser {
   static Song parseContent(Song song) {

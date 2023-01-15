@@ -7,7 +7,7 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:hello_word/widgets/controlled_text_field_widget.dart';
 
 import '../models/song.dart';
-import '../tools/editorControoler.dart';
+import '../tools/editorController.dart';
 
 class Editor extends StatefulWidget {
   final bool readOnly;
@@ -174,14 +174,14 @@ class QuillToolbarWidget extends StatelessWidget {
       showListCheck: false,
       showQuote: false,
       showAlignmentButtons: false,
-      showCameraButton: false,
       showCodeBlock: false,
       showHeaderStyle: false,
       showIndent: false,
       showInlineCode: false,
-      showImageButton: false,
       showLink: false,
-      showVideoButton: false,
+      showFontSize: false,
+      showFontFamily: false,
+      
     );
   }
 }

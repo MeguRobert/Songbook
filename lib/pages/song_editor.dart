@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
-import 'package:hello_word/tools/editorControoler.dart';
+import 'package:hello_word/tools/editorController.dart';
 import 'package:hello_word/tools/validate.dart';
 import 'package:hello_word/widgets/editor.dart';
 

@@ -11,7 +11,7 @@ import '../tools/show_error_dialog.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
-import '../tools/editorControoler.dart';
+import '../tools/editorController.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
