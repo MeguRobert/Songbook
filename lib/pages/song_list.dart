@@ -11,7 +11,7 @@ import '../tools/show_error_dialog.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
-import '../tools/editorControoler.dart';
+import '../tools/editorController.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
@@ -130,10 +130,7 @@ class _SongListState extends State<SongList> {
   //     IconButton(onPressed: saveList, icon: Icon(Icons.save));
 
   void saveSong(Song song) async {
-    List<dynamic> documentJSON = editorController.document.toDelta().toJson();
-    var contentIsEmpty =
-        RegExp(r'^(\n|\s)+$').hasMatch(documentJSON[0]['insert']);
-    String content = jsonEncode(documentJSON);
+    
     QuerySnapshot snapshot = await songs.orderBy("id", descending: true).get();
     if (snapshot.docs.isEmpty) {
       song.id = 1;
@@ -142,9 +139,6 @@ class _SongListState extends State<SongList> {
       Song lastSong = Song.fromJson(doc);
       song.id = lastSong.id + 1;
     }
-
-    song.content = contentIsEmpty ? '' : content;
-    song.uploader = _auth.currentUser!.displayName.toString();
 
     if (song.title.isEmpty) {
       MessageHub.showErrorMessage(

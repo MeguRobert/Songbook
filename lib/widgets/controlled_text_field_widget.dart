@@ -5,6 +5,7 @@ class ControlledTextFieldWidget extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String hintText;
   final InputDecoration? inputDecoration;
+  
 
   const ControlledTextFieldWidget(
       {Key? key,
@@ -20,17 +21,26 @@ class ControlledTextFieldWidget extends StatefulWidget {
 }
 
 class _ControlledTextFieldWidgetState extends State<ControlledTextFieldWidget> {
-  final controller = TextEditingController();
+  late TextEditingController controller;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    controller = TextEditingController(text: widget.text);
+
+  }
 
   @override
   Widget build(BuildContext context) {
     const styleActive = TextStyle(color: Colors.black);
     const styleHint = TextStyle(color: Colors.black54);
     final style = widget.text.isEmpty ? styleHint : styleActive;
+    
 
     return Container(
       height: 42,
-      margin: const EdgeInsets.all(16),
+      margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,

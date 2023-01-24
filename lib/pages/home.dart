@@ -62,8 +62,9 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 onPressed: () async {
-                  await _auth.signOut();
+                  // await _auth.signOut();
                 },
+                
               ),
             ),
           ))
