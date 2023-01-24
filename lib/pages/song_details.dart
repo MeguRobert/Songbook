@@ -115,9 +115,8 @@ class _SongDetailState extends State<SongDetail> {
                 onChanged: (dynamic newValue) {
                   setState(() {
                     _editorStateKey.currentState!.speedFactor = newValue;
-                    // _editorStateKey.currentState!.scroll();
+                    _editorStateKey.currentState!.scroll();
                   });
-                  print(newValue);
                 },
               ),
             ),
