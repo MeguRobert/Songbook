@@ -54,46 +54,47 @@ class _SongDetailState extends State<SongDetail> {
       appBar: AppBar(
         title: Text(widget.song.title),
         centerTitle: true,
-        actions: [
-          IconButton(
-              onPressed: () {
-                // editorController.clear();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SongEditor(song: widget.song, onSave: updateSong)),
-                );
-              },
-              icon: Icon(Icons.edit)),
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
-              // popupmenu item 1
-              PopupMenuItem(
-                value: 1,
-                // row has two child icon and text.
-                child: Row(
-                  children: [
-                    Icon(Icons.text_increase_rounded),
-                  ],
-                ),
-              ),
-              // popupmenu item 2
-              PopupMenuItem(
-                value: 2,
-                // row has two child icon and text
-                child: Row(
-                  children: [
-                    Icon(Icons.text_decrease_rounded),
-                  ],
-                ),
-              ),
-            ],
-            offset: Offset(0, 100),
-            color: Colors.grey,
-            elevation: 2,
-          ),
-        ],
+        // TODO make this actions working after first release 
+        // actions: [
+        //   IconButton(
+        //       onPressed: () {
+        //         // editorController.clear();
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //               builder: (context) =>
+        //                   SongEditor(song: widget.song, onSave: updateSong)),
+        //         );
+        //       },
+        //       icon: Icon(Icons.edit)),
+        //   PopupMenuButton<int>(
+        //     itemBuilder: (context) => [
+        //       // popupmenu item 1
+        //       PopupMenuItem(
+        //         value: 1,
+        //         // row has two child icon and text.
+        //         child: Row(
+        //           children: [
+        //             Icon(Icons.text_increase_rounded),
+        //           ],
+        //         ),
+        //       ),
+        //       // popupmenu item 2
+        //       PopupMenuItem(
+        //         value: 2,
+        //         // row has two child icon and text
+        //         child: Row(
+        //           children: [
+        //             Icon(Icons.text_decrease_rounded),
+        //           ],
+        //         ),
+        //       ),
+        //     ],
+        //     offset: Offset(0, 100),
+        //     color: Colors.grey,
+        //     elevation: 2,
+        //   ),
+        // ],
       ),
       body: Editor(
         widget.song,
