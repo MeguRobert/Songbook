@@ -7,7 +7,7 @@ import 'package:hello_word/pages/song_editor.dart';
 
 import '../models/song.dart';
 import '../services/auth.dart';
-import '../tools/show_error_dialog.dart';
+import '../tools/show_message.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/song_card.dart';
 import '../tools/local_storage.dart';
@@ -130,7 +130,6 @@ class _SongListState extends State<SongList> {
   //     IconButton(onPressed: saveList, icon: Icon(Icons.save));
 
   void saveSong(Song song) async {
-    
     QuerySnapshot snapshot = await songs.orderBy("id", descending: true).get();
     if (snapshot.docs.isEmpty) {
       song.id = 1;
@@ -141,17 +140,14 @@ class _SongListState extends State<SongList> {
     }
 
     if (song.title.isEmpty) {
-      MessageHub.showErrorMessage(
-          context, 'Hiba', 'Nem adtad meg az ének címét!');
+      showMessage(context, 'Hiba', 'Nem adtad meg az ének címét!');
     } else if (song.content.isEmpty) {
-      MessageHub.showErrorMessage(
-          context, 'Hiba', 'Nem adtad meg az ének szövegét!');
+      showMessage(context, 'Hiba', 'Nem adtad meg az ének szövegét!');
     } else if (song.title.isNotEmpty && song.content.isNotEmpty) {
       // search for song with the same title
       snapshot = await songs.where('title', isEqualTo: song.title).get();
       if (snapshot.docs.isNotEmpty) {
-        MessageHub.showErrorMessage(
-            context, 'Hiba', 'Már van ilyen című ének!');
+        showMessage(context, 'Hiba', 'Már van ilyen című ének!');
       } else {
         final docSong = songs.doc(song.id.toString());
         await docSong.set(song.toJson());

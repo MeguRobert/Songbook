@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/services/auth.dart';
 
+import '../tools/show_message.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -31,26 +33,11 @@ class _LoginState extends State<Login> {
   void validateResponse(dynamic response) {
     // if signInResponse type is User, then the operation was successful
     if (response is User) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Felhasználói adatok'),
-            content: Text(response.displayName ?? 'Felhasználó'),
-          );
-        },
-      );
+      showMessage(context, 'Felhasználói adatok',
+          response.displayName ?? 'Felhasználó');
     } else if (response is PasswordResetEmailResponse) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return const AlertDialog(
-            title: Text('Elfelejtett jelszó'),
-            content: Text(
-                'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltozni!\n\nLehetséges, hogy emailünk a SPAM mappába került.'),
-          );
-        },
-      );
+      showMessage(context, 'Elfelejtett jelszó',
+          'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltoztatni!\n\nLehetséges, hogy emailünk a SPAM mappába került.');
     } else if (response is FirebaseAuthException) {
       String errorCode = response.code;
       String errorMessage = response.message!;
@@ -83,26 +70,11 @@ class _LoginState extends State<Login> {
           break;
       }
 
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Hiba'),
-            content: Text(errorMessage),
-          );
-        },
-      );
+      showMessage(context, 'Hiba', errorMessage);
     } else if (response is Exception) {
       // show error message
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Hiba'),
-            content: Text(response.toString().replaceFirst('Exception:', "")),
-          );
-        },
-      );
+      showMessage(
+          context, 'Hiba', response.toString().replaceFirst('Exception:', ""));
     }
   }
 
