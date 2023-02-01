@@ -20,6 +20,12 @@ class AuthService {
   // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
+      if (email.isEmpty) {
+        throw Exception('Nem adott meg emailt!');
+      }
+      if (password.isEmpty) {
+        throw Exception('Nem adott meg jelszót!');
+      }
       UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
         password: password,
@@ -39,6 +45,12 @@ class AuthService {
       if (name.isEmpty) {
         throw Exception('Nem adott meg nevet!');
       }
+      if (email.isEmpty) {
+        throw Exception('Nem adott meg emailt!');
+      }
+      if (password.isEmpty) {
+        throw Exception('Nem adott meg jelszót!');
+      }
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -50,6 +62,20 @@ class AuthService {
       print(e.toString());
       return e;
     }
+  }
+
+  // register with email & password
+  Future sendPasswordResetEmail(String email) async {
+    try {
+      if (email.isEmpty) {
+        throw Exception('Nem adott meg emailt!');
+      }
+      await _auth.sendPasswordResetEmail(email: email);
+    } catch (e) {
+      print(e.toString());
+      return e;
+    }
+    return PasswordResetEmailResponse();
   }
 
   // sign out
@@ -77,4 +103,9 @@ class AuthService {
   bool get isAuthenticated {
     return currentUser != null;
   }
+}
+
+class PasswordResetEmailResponse {
+  String result = 'success';
+  int code = 200;
 }
