@@ -81,17 +81,18 @@ class _SongListState extends State<SongList> {
               ],
             );
           }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          editorController.clear();
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => SongEditor(onSave: saveSong)),
-          );
-        },
-        child: const Icon(Icons.add),
-      ),
+      floatingActionButton: _auth.hasEditorRights
+          ? FloatingActionButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => SongEditor(onSave: saveSong)),
+                );
+              },
+              child: const Icon(Icons.add),
+            )
+          : Container(),
     );
   }
 

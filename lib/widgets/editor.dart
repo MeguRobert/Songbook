@@ -4,6 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_quill/flutter_quill.dart' as quill;
+import 'package:flutter_quill/flutter_quill.dart';
 import 'package:hello_word/widgets/controlled_text_field_widget.dart';
 
 import '../models/song.dart';
@@ -28,6 +29,7 @@ class EditorState extends State<Editor> {
   late String author;
   double speedFactor = 10;
   ValueNotifier<bool> _speedFactorChanged = ValueNotifier(false);
+  final FocusNode focusNode = FocusNode();
 
   scroll() {
     double maxExtent = _scrollController.position.maxScrollExtent;
@@ -80,18 +82,32 @@ class EditorState extends State<Editor> {
                   padding: const EdgeInsets.all(8),
                   child: Container(
                     decoration: BoxDecoration(
-                      // border: Border.all(color: Colors.black),
                       borderRadius: BorderRadius.circular(8),
                       color: Colors.white,
                     ),
-                    child: SingleChildScrollView(
-                      controller: _scrollController,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: quill.QuillEditor.basic(
-                          controller: editorController,
-                          readOnly: widget.readOnly, // true for view only mode
-                        ),
+                    child: GestureDetector(
+                      onTap: () {
+                        FocusScope.of(context).requestFocus(focusNode);
+                      },
+                      child: SingleChildScrollView(
+                        controller: _scrollController,
+                        child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: quill.QuillEditor(
+                              controller: editorController,
+                              scrollable: true,
+                              scrollController: ScrollController(),
+                              focusNode: focusNode,
+                              padding: EdgeInsets.all(4),
+                              autoFocus: !widget.readOnly,
+                              readOnly: widget.readOnly,
+                              expands: false,
+                              showCursor: !widget.readOnly,
+                              // paintCursorAboveText: !widget.readOnly,
+                              // floatingCursorDisabled: widget.readOnly,
+                              placeholder:
+                                  "írd be az ének szövegét. Kattints az első",
+                            )),
                       ),
                     ),
                   ),
@@ -110,6 +126,16 @@ class EditorState extends State<Editor> {
     EditorController.onLoad(widget.song?.content);
     title = widget.song?.title ?? '';
     author = widget.song?.author ?? '';
+  }
+
+  @override
+  void dispose() {
+    focusNode.dispose();
+
+    editorController.clear();
+    editorController.dispose();
+    editorController = QuillController.basic();
+    super.dispose();
   }
 
   void extractChords(List<dynamic> documentJSON) {
@@ -181,7 +207,6 @@ class QuillToolbarWidget extends StatelessWidget {
       showLink: false,
       showFontSize: false,
       showFontFamily: false,
-      
     );
   }
 }
