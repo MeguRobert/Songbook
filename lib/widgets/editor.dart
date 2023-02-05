@@ -131,8 +131,6 @@ class EditorState extends State<Editor> {
   @override
   void dispose() {
     focusNode.dispose();
-
-    editorController.clear();
     editorController.dispose();
     editorController = QuillController.basic();
     super.dispose();

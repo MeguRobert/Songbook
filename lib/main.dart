@@ -5,6 +5,7 @@ import 'package:hello_word/pages/login.dart';
 import 'package:hello_word/pages/register.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:hello_word/pages/song_editor.dart';
 import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/pages/verify_email.dart';
 
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
           '/': (BuildContext context) => const MainPage(),
           '/home': (BuildContext context) => const Home(),
           '/songlist': (BuildContext context) => const SongList(),
+          '/editor': (BuildContext context) => const SongEditor(),
           '/auth/registration': (BuildContext context) => const Registration(),
           '/auth/login': (BuildContext context) => const Login(),
         });

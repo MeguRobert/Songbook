@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/pages/song_editor.dart';
+import 'package:hello_word/repository/song_repository.dart';
 import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -38,16 +39,6 @@ class _SongDetailState extends State<SongDetail> {
     );
   }
 
-  void updateSong(Song song) {
-    final docSong =
-        FirebaseFirestore.instance.collection('songs').doc('${song.id}');
-
-    if (song.content.isNotEmpty) {
-      docSong.update(song.toJson());
-    }
-    Navigator.of(context).pop();
-  }
-
   IconData iconScroll = Icons.arrow_right;
   double iconSize = 50;
   @override
@@ -60,13 +51,8 @@ class _SongDetailState extends State<SongDetail> {
           if (_auth.hasEditorRights)
             IconButton(
                 onPressed: () {
-                  // editorController.clear();
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SongEditor(song: widget.song, onSave: updateSong)),
-                  );
+                  Navigator.of(context).pushNamed('/editor',
+                      arguments: {"operation": 'edit', 'song': widget.song});
                 },
                 icon: Icon(Icons.edit)),
           // TODO make this actions working after first release

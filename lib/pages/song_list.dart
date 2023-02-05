@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/pages/song_editor.dart';
+import 'package:hello_word/repository/song_repository.dart';
 
 import '../models/song.dart';
 import '../services/auth.dart';
@@ -22,15 +23,15 @@ class SongList extends StatefulWidget {
 
 class _SongListState extends State<SongList> {
   final AuthService _auth = AuthService();
-  final CollectionReference songs =
-      FirebaseFirestore.instance.collection('songs');
+  final SongRepository _songRepository = SongRepository();
 
   int length = 0;
-
   String query = '';
 
   @override
   Widget build(BuildContext context) {
+    CollectionReference songs = _songRepository.songs;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Énekek'),
@@ -84,11 +85,13 @@ class _SongListState extends State<SongList> {
       floatingActionButton: _auth.hasEditorRights
           ? FloatingActionButton(
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => SongEditor(onSave: saveSong)),
-                );
+                Navigator.of(context)
+                    .pushNamed('/editor', arguments: {'operation': 'add'});
+                // Navigator.push(
+                //   context,
+                //   MaterialPageRoute(
+                //       builder: (context) => SongEditor(operation: 'add')),
+                // );
               },
               child: const Icon(Icons.add),
             )
@@ -130,32 +133,6 @@ class _SongListState extends State<SongList> {
   // Widget buildSaveListButton() =>
   //     IconButton(onPressed: saveList, icon: Icon(Icons.save));
 
-  void saveSong(Song song) async {
-    QuerySnapshot snapshot = await songs.orderBy("id", descending: true).get();
-    if (snapshot.docs.isEmpty) {
-      song.id = 1;
-    } else {
-      Object? doc = snapshot.docs[0].data();
-      Song lastSong = Song.fromJson(doc);
-      song.id = lastSong.id + 1;
-    }
-
-    if (song.title.isEmpty) {
-      showMessage(context, 'Hiba', 'Nem adtad meg az ének címét!');
-    } else if (song.content.isEmpty) {
-      showMessage(context, 'Hiba', 'Nem adtad meg az ének szövegét!');
-    } else if (song.title.isNotEmpty && song.content.isNotEmpty) {
-      // search for song with the same title
-      snapshot = await songs.where('title', isEqualTo: song.title).get();
-      if (snapshot.docs.isNotEmpty) {
-        showMessage(context, 'Hiba', 'Már van ilyen című ének!');
-      } else {
-        final docSong = songs.doc(song.id.toString());
-        await docSong.set(song.toJson());
-      }
-    }
-  }
-
   Stream<List<Song>> getSongs() => FirebaseFirestore.instance
       .collection('songs')
       .snapshots()
@@ -163,7 +140,7 @@ class _SongListState extends State<SongList> {
           snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList());
 
   void searchSong(String query) {
-    final queriedSongs = songs.where((book) {
+    final queriedSongs = _songRepository.songs.where((book) {
       final number = book.id.toString();
       final titleLower = book.title.toLowerCase();
       final authorLower = book.author.toLowerCase();
@@ -179,7 +156,7 @@ class _SongListState extends State<SongList> {
 
   void saveList() {
     print("songlist.saveList");
-    String json = jsonEncode(songs);
+    String json = jsonEncode(_songRepository.songs);
     print(json);
     LocalStorage.writeContent('songs.txt', json);
   }
