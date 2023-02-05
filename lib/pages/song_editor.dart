@@ -16,11 +16,13 @@ class SongEditor extends StatefulWidget {
 }
 
 class _SongEditorState extends State<SongEditor> {
+  Song songState = Song.empty();
+
   @override
   Widget build(BuildContext context) {
     final Map data = ModalRoute.of(context)?.settings.arguments as Map;
     String operation = data['operation'];
-    Song song = data['song'] ?? Song.empty();
+    Song song = data['song'] ?? songState;
     bool submitted = false;
     bool readOnly = false;
 
@@ -35,8 +37,9 @@ class _SongEditorState extends State<SongEditor> {
           setState(() {
             submitted = true;
           });
+          songState = song;
           print('save');
-          var response;
+          dynamic response;
           if (operation == "add") {
             response =
                 await SongRepository().saveSong(Parser.parseContent(song));
@@ -53,7 +56,8 @@ class _SongEditorState extends State<SongEditor> {
           } else {
             editorController.clear();
             if (mounted) {
-              Navigator.of(context).pushNamed("/songlist");
+              Navigator.pushNamedAndRemoveUntil(
+                  context, "/songlist", (r) => false);
             }
           }
         },

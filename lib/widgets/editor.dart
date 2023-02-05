@@ -106,7 +106,7 @@ class EditorState extends State<Editor> {
                               // paintCursorAboveText: !widget.readOnly,
                               // floatingCursorDisabled: widget.readOnly,
                               placeholder:
-                                  "írd be az ének szövegét. Kattints az első",
+                                  "írd be az ének szövegét. Koppints az első sorra",
                             )),
                       ),
                     ),

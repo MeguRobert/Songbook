@@ -26,12 +26,12 @@ class SongCard extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Colors.green)),
           subtitle: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text("Szerző: ${song.author}"),
               Text("Feltőltő: ${song.uploader}")
             ],
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
           ),
           leading: CircleAvatar(
               child: Text("${song.id}", style: const TextStyle(fontSize: 16))),
