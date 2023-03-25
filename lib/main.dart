@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Keresztyén Énekeskönyv',
+        title: 'Zengjed a dalt!',
         theme: ThemeData(
           primarySwatch: Colors.palette,
           visualDensity: VisualDensity.adaptivePlatformDensity,
