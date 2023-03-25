@@ -110,6 +110,13 @@ class AuthService {
 
     return editors.contains(currentUser!.email);
   }
+  
+   bool get hasAdminRights {
+    List<String> editors = ['megurobi14@gmail.com', 'akoslorincz123@gmail.com'];
+    // List<String> editors = []; // for testing
+
+    return editors.contains(currentUser!.email);
+  }
 }
 
 class PasswordResetEmailResponse {

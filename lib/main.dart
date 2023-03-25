@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Keresztyén Énekeskönyv',
         theme: ThemeData(
-          primarySwatch: Colors.green,
+          primarySwatch: Colors.palette,
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
         initialRoute: '/',

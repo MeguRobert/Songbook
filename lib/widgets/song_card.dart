@@ -3,12 +3,14 @@ import '../models/song.dart';
 
 class SongCard extends StatelessWidget {
   final Song song;
+  final bool canDelete;
   final Function onDelete;
   final Function onTap;
 
   const SongCard(
       {Key? key,
       required this.song,
+      required this.canDelete,
       required this.onDelete,
       required this.onTap})
       : super(key: key);
@@ -21,10 +23,10 @@ class SongCard extends StatelessWidget {
         child: ListTile(
           title: Text(song.title,
               overflow: TextOverflow.ellipsis,
-              style: const TextStyle(
+              style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.green)),
+                  color: Colors.palette)),
           subtitle: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,11 +36,18 @@ class SongCard extends StatelessWidget {
             ],
           ),
           leading: CircleAvatar(
-              child: Text("${song.id}", style: const TextStyle(fontSize: 16))),
-          trailing: IconButton(
-            icon: const Icon(Icons.delete),
-            onPressed: () => onDelete(),
-          ),
+              backgroundColor: Colors.palette[50],
+              child: Text("${song.id}",
+                  style: TextStyle(fontSize: 16, color: Colors.palette[300]))),
+          trailing: canDelete
+              ? IconButton(
+                  icon: Icon(
+                    Icons.delete,
+                    color: Colors.palette[100],
+                  ),
+                  onPressed: () => onDelete(),
+                )
+              : Container(),
         ),
       ),
     );
