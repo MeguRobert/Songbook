@@ -14,6 +14,9 @@ class Parser {
     String content = jsonEncode(documentJSON);
     song.content = contentIsEmpty ? '' : content;
     song.uploader = auth.currentUser!.displayName.toString();
+    if (song.author.isEmpty) {
+      song.author = 'ismeretlen';
+    }
     return song;
   }
 }

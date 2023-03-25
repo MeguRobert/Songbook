@@ -62,8 +62,30 @@ class _HomeState extends State<Home> {
                   ],
                 ),
                 onPressed: () async {
-                  // await _auth.signOut();
-                },
+                    await showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: Text("Are you sure you want to sign out?"),
+                          actions: <Widget>[
+                            TextButton(
+                              child: Text("Yes"),
+                              onPressed: () async {
+                                Navigator.of(context).pop();
+                                await _auth.signOut();
+                              },
+                            ),
+                            TextButton(
+                              child: Text("No"),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  }
                 
               ),
             ),

@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/pages/song_editor.dart';
+import 'package:hello_word/repository/song_repository.dart';
+import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
 
@@ -18,6 +20,7 @@ class SongDetail extends StatefulWidget {
 
 class _SongDetailState extends State<SongDetail> {
   final GlobalKey<EditorState> _editorStateKey = GlobalKey<EditorState>();
+  final AuthService _auth = AuthService();
 
   void showAction(BuildContext context, int index) {
     showDialog<void>(
@@ -36,17 +39,7 @@ class _SongDetailState extends State<SongDetail> {
     );
   }
 
-  void updateSong(Song song) {
-    final docSong =
-        FirebaseFirestore.instance.collection('songs').doc('${song.id}');
-
-    if (song.content.isNotEmpty) {
-      docSong.update(song.toJson());
-    }
-    Navigator.of(context).pop();
-  }
-
-  IconData icon = Icons.arrow_right;
+  IconData iconScroll = Icons.arrow_right;
   double iconSize = 50;
   @override
   Widget build(BuildContext context) {
@@ -55,44 +48,41 @@ class _SongDetailState extends State<SongDetail> {
         title: Text(widget.song.title),
         centerTitle: true,
         actions: [
-          IconButton(
-              onPressed: () {
-                // editorController.clear();
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) =>
-                          SongEditor(song: widget.song, onSave: updateSong)),
-                );
-              },
-              icon: Icon(Icons.edit)),
-          PopupMenuButton<int>(
-            itemBuilder: (context) => [
-              // popupmenu item 1
-              PopupMenuItem(
-                value: 1,
-                // row has two child icon and text.
-                child: Row(
-                  children: [
-                    Icon(Icons.text_increase_rounded),
-                  ],
-                ),
-              ),
-              // popupmenu item 2
-              PopupMenuItem(
-                value: 2,
-                // row has two child icon and text
-                child: Row(
-                  children: [
-                    Icon(Icons.text_decrease_rounded),
-                  ],
-                ),
-              ),
-            ],
-            offset: Offset(0, 100),
-            color: Colors.grey,
-            elevation: 2,
-          ),
+          if (_auth.hasEditorRights)
+            IconButton(
+                onPressed: () {
+                  Navigator.of(context).pushNamed('/editor',
+                      arguments: {"operation": 'edit', 'song': widget.song});
+                },
+                icon: Icon(Icons.edit)),
+          // TODO make this actions working after first release
+          //   PopupMenuButton<int>(
+          //     itemBuilder: (context) => [
+          //       // popupmenu item 1
+          //       PopupMenuItem(
+          //         value: 1,
+          //         // row has two child icon and text.
+          //         child: Row(
+          //           children: [
+          //             Icon(Icons.text_increase_rounded),
+          //           ],
+          //         ),
+          //       ),
+          //       // popupmenu item 2
+          //       PopupMenuItem(
+          //         value: 2,
+          //         // row has two child icon and text
+          //         child: Row(
+          //           children: [
+          //             Icon(Icons.text_decrease_rounded),
+          //           ],
+          //         ),
+          //       ),
+          //     ],
+          //     offset: Offset(0, 100),
+          //     color: Colors.grey,
+          //     elevation: 2,
+          //   ),
         ],
       ),
       body: Editor(

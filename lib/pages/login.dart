@@ -2,6 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/services/auth.dart';
 
+import '../tools/show_message.dart';
+
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
 
@@ -20,30 +22,60 @@ class _LoginState extends State<Login> {
   String password = '';
 
   bool isLogin = true;
-  bool showRegistrationbutton = false;
   bool showForgetPasswordButton = false;
 
-  void _handleTapRegisterInsteadButton() {
+  void _switchLoginRegister() {
     setState(() {
       isLogin = !isLogin;
-      showRegistrationbutton = !showRegistrationbutton;
     });
   }
 
-  Future _handleTapForgetPasswordButton() async {
-    // call change password from firebase
-    await FirebaseAuth.instance.sendPasswordResetEmail(email: email);
+  void validateResponse(dynamic response) {
+    // if signInResponse type is User, then the operation was successful
+    if (response is User) {
+      showMessage(context, 'Felhasználói adatok',
+          response.displayName ?? 'Felhasználó');
+    } else if (response is PasswordResetEmailResponse) {
+      showMessage(context, 'Elfelejtett jelszó',
+          'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltoztatni!\n\nLehetséges, hogy emailünk a SPAM mappába került.');
+    } else if (response is FirebaseAuthException) {
+      String errorCode = response.code;
+      String errorMessage = response.message!;
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return const AlertDialog(
-          title: Text('Elfelejtett jelszó'),
-          content: Text(
-              'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltozni!\n\nLehetséges, hogy emailünk a SPAM mappába került.'),
-        );
-      },
-    );
+      switch (errorCode) {
+        case 'user-not-found':
+          errorMessage =
+              'A felhasználó nem található! Kéjük próbálja újra, vagy regisztráljon!';
+          break;
+        case 'wrong-password':
+          errorMessage = 'Hibás jelszó';
+          setState(() {
+            showForgetPasswordButton = true;
+          });
+          break;
+        case 'invalid-email':
+          errorMessage = 'Hibás email cím';
+          break;
+        case 'email-already-in-use':
+          errorMessage = 'Ez az email cím már használatban van!';
+          break;
+        case 'weak-password':
+          errorMessage = 'Túl rövid jelszó';
+          break;
+        default:
+          errorMessage = 'Ismeretlen hiba';
+          setState(() {
+            showForgetPasswordButton = false;
+          });
+          break;
+      }
+
+      showMessage(context, 'Hiba', errorMessage);
+    } else if (response is Exception) {
+      // show error message
+      showMessage(
+          context, 'Hiba', response.toString().replaceFirst('Exception:', ""));
+    }
   }
 
   @override
@@ -106,10 +138,14 @@ class _LoginState extends State<Login> {
               height: 40.0,
             ),
             isLogin ? _loginButton() : _registerButton(),
-            if (isLogin && showRegistrationbutton)
+            if (isLogin)
               TextButton(
-                  onPressed: _handleTapRegisterInsteadButton,
+                  onPressed: _switchLoginRegister,
                   child: const Text('Regisztrálok')),
+            if (!isLogin)
+              TextButton(
+                  onPressed: _switchLoginRegister,
+                  child: const Text('Bejelentkezem')),
             if (showForgetPasswordButton) _forgetPasswordButton()
           ],
         ),
@@ -123,135 +159,26 @@ class _LoginState extends State<Login> {
           // sign in with email and password
           dynamic signInResponse =
               await _auth.signInWithEmailAndPassword(email, password);
-          // if signInResponse type is User, then sign in was successful
-          if (signInResponse is User) {
-            // navigate to home page
-            // Navigator.pushNamed(context, '/home');
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Felhasználói adatok'),
-                  content: Text(signInResponse.displayName ?? 'Felhasználó'),
-                );
-              },
-            );
-          } else if (signInResponse is FirebaseAuthException) {
-            // show error message
-            String errorCode = signInResponse.code;
-            String errorMessage = signInResponse.message!;
 
-            switch (errorCode) {
-              case 'user-not-found':
-                errorMessage =
-                    'A felhasználó nem található! Kéjük próbálja újra, vagy regisztráljon!';
-                setState(() {
-                  showRegistrationbutton = true;
-                  showRegistrationbutton = false;
-                });
-                break;
-              case 'wrong-password':
-                errorMessage = 'Hibás jelszó';
-                setState(() {
-                  showForgetPasswordButton = true;
-                  showRegistrationbutton = false;
-                });
-                break;
-              case 'invalid-email':
-                errorMessage = 'Hibás email cím';
-                break;
-              default:
-                errorMessage = 'Ismeretlen hiba';
-                setState(() {
-                  showRegistrationbutton = true;
-                  showForgetPasswordButton = false;
-                });
-                break;
-            }
-
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Hiba'),
-                  content: Text(errorMessage),
-                );
-              },
-            );
-          }
+          validateResponse(signInResponse);
         },
       );
 
-  _registerButton() => TextButton(
+  Widget _registerButton() => TextButton(
         child: const Text('Regisztráció'),
         onPressed: () async {
-          // sign in with email and password
+          // register in with email and password
           dynamic registrationResponse = await _auth
               .registerWithEmailAndPassword(userName, email, password);
-          // if signInResponse type is User, then sign in was successful
-          if (registrationResponse is User) {
-            // navigate to home page
-            // Navigator.pushNamed(context, '/home');
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Felhasználói adatok'),
-                  content:
-                      Text(registrationResponse.displayName ?? 'Felhasználó'),
-                );
-              },
-            );
-          } else if (registrationResponse is FirebaseAuthException) {
-            // show error message
-            String errorCode = registrationResponse.code;
-            String errorMessage = registrationResponse.message!;
 
-            switch (errorCode) {
-              case 'email-already-in-use':
-                errorMessage = 'Ez az email cím már használatban van!';
-                break;
-              case 'weak-password':
-                errorMessage = 'Túl rövid jelszó';
-                break;
-              case 'invalid-email':
-                errorMessage = 'Hibás email cím';
-                break;
-              default:
-                errorMessage = 'Ismeretlen hiba';
-                setState(() {
-                  showRegistrationbutton = true;
-                });
-                break;
-            }
-
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Hiba'),
-                  content: Text(errorMessage),
-                );
-              },
-            );
-          } else if (registrationResponse is Exception) {
-            // show error message
-            showDialog(
-              context: context,
-              builder: (BuildContext context) {
-                return AlertDialog(
-                  title: const Text('Hiba'),
-                  content: Text(registrationResponse
-                      .toString()
-                      .replaceFirst('Exception:', "")),
-                );
-              },
-            );
-          }
+          validateResponse(registrationResponse);
         },
       );
 
   Widget _forgetPasswordButton() => TextButton(
-      onPressed: _handleTapForgetPasswordButton,
+      onPressed: () async {
+        dynamic response = await _auth.sendPasswordResetEmail(email);
+        validateResponse(response);
+      },
       child: const Text('Elfelejtettem a jelszavam'));
 }
