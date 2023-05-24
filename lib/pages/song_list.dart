@@ -23,37 +23,34 @@ class SongList extends StatefulWidget {
 
 class _SongListState extends State<SongList> {
   final AuthService _auth = AuthService();
-  final SongRepository _songRepository = SongRepository();
-
-  int length = 0;
   String query = '';
+
+  List<Song>? filteredSongs;
+  List<Song>? currentSongList;
 
   @override
   Widget build(BuildContext context) {
-    CollectionReference songs = _songRepository.songs;
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Énekek'),
         centerTitle: true,
       ),
       body: StreamBuilder(
-          stream: songs.orderBy('id', descending: false).snapshots(),
-          builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          stream: SongRepository.songs,
+          builder: (context, AsyncSnapshot<List<Song>> snapshot) {
             if (snapshot.hasData) {
-              length = snapshot.data!.docs.length;
+              List<Song> songs = filteredSongs ?? snapshot.data!;
+              currentSongList = snapshot.data!;
 
               return Column(
                 children: [
                   buildSearchBar(),
                   Expanded(
                     child: ListView.builder(
-                      itemCount: length,
+                      itemCount: songs.length,
                       itemBuilder: (context, index) {
-                        final DocumentSnapshot document =
-                            snapshot.data!.docs[index];
+                        final Song song = songs[index];
                         try {
-                          final Song song = Song.fromJson(document.data());
                           return SongCard(
                             song: song,
                             canDelete: _auth.hasAdminRights,
@@ -76,7 +73,7 @@ class _SongListState extends State<SongList> {
                                         child: Text('Törlés'),
                                         onPressed: () {
                                           setState(() {
-                                            songs.doc(document.id).delete();
+                                            SongRepository.deleteSong(song);
                                           });
                                           Navigator.of(context).pop();
                                         },
@@ -128,74 +125,21 @@ class _SongListState extends State<SongList> {
         onChanged: searchSong,
       );
 
-  // Widget buildSongList() => Expanded(
-  //       child: ListView.builder(
-  //         itemCount: songs.length,
-  //         itemBuilder: (context, index) {
-  //           final song = songs[index];
-  //           return SongCard(
-  //             song: song,
-  //             onDelete: () {
-  //               print('delete');
-  //               setState(() {
-  //                 songs.remove(song);
-  //               });
-  //             },
-  //             onTap: () {
-  //               Navigator.push(
-  //                 context,
-  //                 MaterialPageRoute(
-  //                     builder: (context) => SongDetail(song: song)),
-  //               );
-  //             },
-  //           );
-  //         },
-  //       ),
-  //     );
-
-  // Widget buildSaveListButton() =>
-  //     IconButton(onPressed: saveList, icon: Icon(Icons.save));
-
-  Stream<List<Song>> getSongs() => FirebaseFirestore.instance
-      .collection('songs')
-      .snapshots()
-      .map((snapshot) =>
-          snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList());
-
-  // void searchSong(String query) {
-  //   final queriedSongs = _songRepository.songs.where((song) {
-  //     final number = song.id.toString();
-  //     final titleLower = song.title.toLowerCase();
-  //     final authorLower = song.author.toLowerCase();
-  //     final searchLower = query.toLowerCase();
-  //     final uploaderLower = song.uploader.toLowerCase();
-
-  //     return titleLower.contains(searchLower) ||
-  //         authorLower.startsWith(searchLower) ||
-  //         uploaderLower.startsWith(searchLower) ||
-  //         number.startsWith(searchLower);
-  //   });
-  // }
-
   void searchSong(String query) {
-    final queriedSongs = _songRepository.songs.where((song) {
+    final queriedSongs = currentSongList!.where((song) {
       final number = song.id.toString();
-      final titleLower = song.data()['title'].toLowerCase();
-      final authorLower = song.data()['author'].toLowerCase();
+      final titleLower = song.title.toLowerCase();
+      final authorLower = song.author.toLowerCase();
       final searchLower = query.toLowerCase();
-      final uploaderLower = song.data()['uploader'].toLowerCase();
+      final uploaderLower = song.uploader.toLowerCase();
 
       return titleLower.contains(searchLower) ||
           authorLower.startsWith(searchLower) ||
           uploaderLower.startsWith(searchLower) ||
           number.startsWith(searchLower);
+    }).toList();
+    setState(() {
+      filteredSongs = queriedSongs;
     });
-  }
-
-  void saveList() {
-    print("songlist.saveList");
-    String json = jsonEncode(_songRepository.songs);
-    print(json);
-    LocalStorage.writeContent('songs.txt', json);
   }
 }

@@ -4,16 +4,26 @@ import '../models/song.dart';
 import '../tools/show_message.dart';
 
 class SongRepository {
-  final CollectionReference songs =
+  static final CollectionReference songCollection =
       FirebaseFirestore.instance.collection('songs');
-      
 
-  Future saveSong(Song song) async {
+  static List<Song> _songlistFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList();
+  }
+
+  static Stream<List<Song>> get songs {
+    return songCollection
+        .orderBy('id', descending: false)
+        .snapshots()
+        .map(_songlistFromSnapshot);
+  }
+
+  static Future saveSong(Song song) async {
     try {
       await _validateSong(song);
 
       QuerySnapshot snapshot =
-          await songs.orderBy("id", descending: true).get();
+          await songCollection.orderBy("id", descending: true).get();
       if (snapshot.docs.isEmpty) {
         song.id = 1;
       } else {
@@ -22,7 +32,7 @@ class SongRepository {
         song.id = lastSong.id + 1;
       }
 
-      final docSong = songs.doc(song.id.toString());
+      final docSong = songCollection.doc(song.id.toString());
       await docSong.set(song.toJson());
     } catch (e) {
       print(e.toString());
@@ -30,10 +40,10 @@ class SongRepository {
     }
   }
 
-  Future updateSong(Song song) async {
+  static Future updateSong(Song song) async {
     try {
       await _validateSong(song);
-      final docSong = songs.doc('${song.id}');
+      final docSong = songCollection.doc('${song.id}');
       docSong.update(song.toJson());
     } catch (e) {
       print(e.toString());
@@ -41,14 +51,24 @@ class SongRepository {
     }
   }
 
-  Future _validateSong(Song song) async {
+  static Future deleteSong(Song song) async {
+    try {
+      final docSong = songCollection.doc('${song.id}');
+      docSong.delete();
+    } catch (e) {
+      print(e.toString());
+      return e;
+    }
+  }
+
+  static Future _validateSong(Song song) async {
     if (song.title.isEmpty) {
       throw Exception('Nem adtad meg az ének címét!');
     } else if (song.content.isEmpty) {
       throw Exception('Nem adtad meg az ének szövegét!');
     } else {
       QuerySnapshot snapshot =
-          await songs.where('title', isEqualTo: song.title).get();
+          await songCollection.where('title', isEqualTo: song.title).get();
       if (snapshot.docs.isNotEmpty &&
           snapshot.docs[0].id != song.id.toString()) {
         throw Exception('Már van ilyen című ének!');

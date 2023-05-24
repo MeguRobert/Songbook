@@ -41,11 +41,10 @@ class _SongEditorState extends State<SongEditor> {
           print('save');
           dynamic response;
           if (operation == "add") {
-            response =
-                await SongRepository().saveSong(Parser.parseContent(song));
+            response = await SongRepository.saveSong(Parser.parseContent(song));
           } else if (operation == "edit") {
             response =
-                await SongRepository().updateSong(Parser.parseContent(song));
+                await SongRepository.updateSong(Parser.parseContent(song));
           }
 
           if (response is Exception) {
