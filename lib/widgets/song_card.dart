@@ -43,7 +43,7 @@ class SongCard extends StatelessWidget {
               ? IconButton(
                   icon: Icon(
                     Icons.delete,
-                    color: Colors.palette[100],
+                    color: Colors.grey[700],
                   ),
                   onPressed: () => onDelete(),
                 )

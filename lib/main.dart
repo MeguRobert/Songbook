@@ -1,6 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_word/pages/home.dart';
 import 'package:hello_word/pages/login.dart';
 import 'package:hello_word/pages/register.dart';
 
@@ -30,7 +29,6 @@ class MyApp extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (BuildContext context) => const MainPage(),
-          '/home': (BuildContext context) => const Home(),
           '/songlist': (BuildContext context) => const SongList(),
           '/editor': (BuildContext context) => const SongEditor(),
           '/auth/registration': (BuildContext context) => const Registration(),
@@ -60,21 +58,4 @@ class _MainPageState extends State<MainPage> {
           },
         ),
       );
-}
-
-extension HexColor on Color {
-  /// String is in the format "aabbcc" or "ffaabbcc" with an optional leading "#".
-  static Color fromHex(String hexString) {
-    final buffer = StringBuffer();
-    if (hexString.length == 6 || hexString.length == 7) buffer.write('ff');
-    buffer.write(hexString.replaceFirst('#', ''));
-    return Color(int.parse(buffer.toString(), radix: 16));
-  }
-
-  /// Prefixes a hash sign if [leadingHashSign] is set to `true` (default is `true`).
-  String toHex({bool leadingHashSign = true}) => '${leadingHashSign ? '#' : ''}'
-      '${alpha.toRadixString(16).padLeft(2, '0')}'
-      '${red.toRadixString(16).padLeft(2, '0')}'
-      '${green.toRadixString(16).padLeft(2, '0')}'
-      '${blue.toRadixString(16).padLeft(2, '0')}';
 }

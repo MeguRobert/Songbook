@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_word/pages/home.dart';
+import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/tools/show_message.dart';
 
@@ -42,7 +42,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   Widget build(BuildContext context) => isEmailVerified
-      ? const Home()
+      ? const SongList()
       : Scaffold(
           appBar: AppBar(
             title: const Text("Verify Email"),
@@ -66,11 +66,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 onPressed: canResendEmail ? sendEmailVerification : null,
               ),
               TextButton(
-                child: const Text('Visszavonás',
-                    style: const TextStyle(fontSize: 24)),
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50)),
                 onPressed: () => FirebaseAuth.instance.signOut(),
+                child:
+                    const Text('Visszavonás', style: TextStyle(fontSize: 24)),
               )
             ]),
           ),
@@ -85,7 +85,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await Future.delayed(const Duration(seconds: 10));
       setState(() => canResendEmail = true);
     } on Exception catch (e) {
-      showMessage(context, "Hiba", "Erősítsd meg az emailed!" + e.toString());
+      showMessage(context, "Hiba", "Erősítsd meg az emailed!$e");
     }
   }
 

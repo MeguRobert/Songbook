@@ -28,7 +28,6 @@ class EditorState extends State<Editor> {
   late String title;
   late String author;
   double speedFactor = 10;
-  ValueNotifier<bool> _speedFactorChanged = ValueNotifier(false);
   final FocusNode focusNode = FocusNode();
 
   scroll() {
