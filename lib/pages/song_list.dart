@@ -1,18 +1,12 @@
-import 'dart:convert';
-
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/pages/song_details.dart';
-import 'package:hello_word/pages/song_editor.dart';
 import 'package:hello_word/repository/song_repository.dart';
 
 import '../models/song.dart';
 import '../services/auth.dart';
-import '../tools/show_message.dart';
 import '../widgets/search_widget.dart';
+import '../widgets/sign_out_button.dart';
 import '../widgets/song_card.dart';
-import '../tools/local_storage.dart';
-import '../tools/editorController.dart';
 
 class SongList extends StatefulWidget {
   const SongList({Key? key}) : super(key: key);
@@ -34,6 +28,7 @@ class _SongListState extends State<SongList> {
       appBar: AppBar(
         title: const Text('Énekek'),
         centerTitle: true,
+        actions: [SignOutButton()],
       ),
       body: StreamBuilder(
           stream: SongRepository.songs,
