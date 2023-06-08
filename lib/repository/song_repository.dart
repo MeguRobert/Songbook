@@ -1,11 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:hello_word/constants.dart';
+import 'package:hello_word/globals.dart';
 
 import '../models/song.dart';
 import '../tools/show_message.dart';
 
 class SongRepository {
-  static final CollectionReference songCollection =
-      FirebaseFirestore.instance.collection('songs');
+  static String defaultLanguage = languages.first.toLowerCase();
+  static CollectionReference songCollection =
+      FirebaseFirestore.instance.collection('test_songs_$defaultLanguage');
 
   static List<Song> _songlistFromSnapshot(QuerySnapshot snapshot) {
     return snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList();
@@ -74,5 +77,11 @@ class SongRepository {
         throw Exception('Már van ilyen című ének!');
       }
     }
+  }
+
+  static void changeLanguage(String value) {
+    String language = value.toLowerCase();
+    songCollection =
+        FirebaseFirestore.instance.collection('test_songs_$language');
   }
 }

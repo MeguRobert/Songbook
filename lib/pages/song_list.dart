@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:hello_word/models/shared_data.dart';
 import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/repository/song_repository.dart';
+import 'package:hello_word/widgets/dropdown_button.dart';
+import 'package:provider/provider.dart';
 
 import '../models/song.dart';
 import '../services/auth.dart';
@@ -24,93 +27,102 @@ class _SongListState extends State<SongList> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Énekek'),
-        centerTitle: true,
-        actions: [SignOutButton()],
-      ),
-      body: StreamBuilder(
-          stream: SongRepository.songs,
-          builder: (context, AsyncSnapshot<List<Song>> snapshot) {
-            if (snapshot.hasData) {
-              List<Song> songs = filteredSongs ?? snapshot.data!;
-              currentSongList = snapshot.data!;
+    return ChangeNotifierProvider(
+      create: (context) => SharedData(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Énekek'),
+          centerTitle: true,
+          actions: [
+            CustomDropdownButton(callBack: (String lang) {
+              SongRepository.changeLanguage(lang);
+              setState(() {});
+            }),
+            SignOutButton()
+          ],
+        ),
+        body: StreamBuilder(
+            stream: SongRepository.songs,
+            builder: (context, AsyncSnapshot<List<Song>> snapshot) {
+              if (snapshot.hasData) {
+                List<Song> songs = filteredSongs ?? snapshot.data!;
+                currentSongList = snapshot.data!;
 
-              return Column(
-                children: [
-                  buildSearchBar(),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: songs.length,
-                      itemBuilder: (context, index) {
-                        final Song song = songs[index];
-                        try {
-                          return SongCard(
-                            song: song,
-                            canDelete: _auth.hasAdminRights,
-                            onDelete: () {
-                              showDialog(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    title: Text('Törlés megerősítése'),
-                                    content: Text(
-                                        'Biztos, hogy törölni szeretné ezt az elemet?'),
-                                    actions: <Widget>[
-                                      TextButton(
-                                        child: Text('Mégsem'),
-                                        onPressed: () {
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                      TextButton(
-                                        child: Text('Törlés'),
-                                        onPressed: () {
-                                          setState(() {
-                                            SongRepository.deleteSong(song);
-                                          });
-                                          Navigator.of(context).pop();
-                                        },
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-                            },
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        SongDetail(song: song)),
-                              );
-                            },
-                          );
-                        } catch (e) {
-                          print(e);
-                        }
-                        return Container();
-                      },
+                return Column(
+                  children: [
+                    buildSearchBar(),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: songs.length,
+                        itemBuilder: (context, index) {
+                          final Song song = songs[index];
+                          try {
+                            return SongCard(
+                              song: song,
+                              canDelete: _auth.hasAdminRights,
+                              onDelete: () {
+                                showDialog(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: Text('Törlés megerősítése'),
+                                      content: Text(
+                                          'Biztos, hogy törölni szeretné ezt az elemet?'),
+                                      actions: <Widget>[
+                                        TextButton(
+                                          child: Text('Mégsem'),
+                                          onPressed: () {
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                        TextButton(
+                                          child: Text('Törlés'),
+                                          onPressed: () {
+                                            setState(() {
+                                              SongRepository.deleteSong(song);
+                                            });
+                                            Navigator.of(context).pop();
+                                          },
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                );
+                              },
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          SongDetail(song: song)),
+                                );
+                              },
+                            );
+                          } catch (e) {
+                            print(e);
+                          }
+                          return Container();
+                        },
+                      ),
                     ),
-                  ),
-                ],
-              );
-            } else {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-          }),
-      floatingActionButton: _auth.hasEditorRights
-          ? FloatingActionButton(
-              onPressed: () {
-                Navigator.of(context)
-                    .pushNamed('/editor', arguments: {'operation': 'add'});
-              },
-              child: const Icon(Icons.add),
-            )
-          : Container(),
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              }
+            }),
+        floatingActionButton: _auth.hasEditorRights
+            ? FloatingActionButton(
+                onPressed: () {
+                  Navigator.of(context)
+                      .pushNamed('/editor', arguments: {'operation': 'add'});
+                },
+                child: const Icon(Icons.add),
+              )
+            : Container(),
+      ),
     );
   }
 
