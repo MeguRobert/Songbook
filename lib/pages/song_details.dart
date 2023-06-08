@@ -1,8 +1,5 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
-import 'package:hello_word/pages/song_editor.dart';
-import 'package:hello_word/repository/song_repository.dart';
 import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -55,34 +52,7 @@ class _SongDetailState extends State<SongDetail> {
                       arguments: {"operation": 'edit', 'song': widget.song});
                 },
                 icon: Icon(Icons.edit)),
-          // TODO make this actions working after first release
-          //   PopupMenuButton<int>(
-          //     itemBuilder: (context) => [
-          //       // popupmenu item 1
-          //       PopupMenuItem(
-          //         value: 1,
-          //         // row has two child icon and text.
-          //         child: Row(
-          //           children: [
-          //             Icon(Icons.text_increase_rounded),
-          //           ],
-          //         ),
-          //       ),
-          //       // popupmenu item 2
-          //       PopupMenuItem(
-          //         value: 2,
-          //         // row has two child icon and text
-          //         child: Row(
-          //           children: [
-          //             Icon(Icons.text_decrease_rounded),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //     offset: Offset(0, 100),
-          //     color: Colors.grey,
-          //     elevation: 2,
-          //   ),
+          // TODO PopupMenu
         ],
       ),
       body: Editor(
@@ -114,39 +84,6 @@ class _SongDetailState extends State<SongDetail> {
           onPress: () {
             _editorStateKey.currentState?.toggleScrolling();
           }),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.endTop,
-      // floatingActionButton: Column(
-      //   // crossAxisAlignment: CrossAxisAlignment.end,
-      //   mainAxisAlignment: MainAxisAlignment.end,
-      //   children: [
-      //     SfSlider(
-      //       value: _editorStateKey.currentState != null
-      //           ? _editorStateKey.currentState!.speedFactor
-      //           : 10,
-      //       min: 5,
-      //       max: 50,
-      //       onChanged: (dynamic newValue) {
-      //         setState(() {
-      //           _editorStateKey.currentState!.speedFactor = newValue;
-      //         });
-      //       },
-      //     ),
-      //     FloatingActionButton(
-      //         onPressed: () {
-      //           _editorStateKey.currentState?.toggleScrolling();
-      //           setState(() {
-      //             if (_editorStateKey.currentState!.scroll) {
-      //               icon = Icons.stop;
-      //               iconSize = 30;
-      //             } else {
-      //               icon = Icons.arrow_right;
-      //               iconSize = 50;
-      //             }
-      //           });
-      //         },
-      //         child: Icon(icon, size: iconSize)),
-      //   ],
-      // ),
     );
   }
 }

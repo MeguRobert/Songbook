@@ -66,11 +66,11 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                 onPressed: canResendEmail ? sendEmailVerification : null,
               ),
               TextButton(
-                child: const Text('Visszavonás',
-                    style: const TextStyle(fontSize: 24)),
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50)),
                 onPressed: () => FirebaseAuth.instance.signOut(),
+                child:
+                    const Text('Visszavonás', style: TextStyle(fontSize: 24)),
               )
             ]),
           ),
@@ -85,7 +85,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await Future.delayed(const Duration(seconds: 10));
       setState(() => canResendEmail = true);
     } on Exception catch (e) {
-      showMessage(context, "Hiba", "Erősítsd meg az emailed!" + e.toString());
+      showMessage(context, "Hiba", "Erősítsd meg az emailed!$e");
     }
   }
 
