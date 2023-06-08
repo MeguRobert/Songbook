@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import '../services/auth.dart';
 
 class SignOutButton extends StatelessWidget {
-  SignOutButton({Key? key}) : super(key: key);
+  SignOutButton({Key? key, this.textIsVisible = false}) : super(key: key);
+  final bool textIsVisible;
 
   final AuthService _auth = AuthService();
 
@@ -12,8 +13,8 @@ class SignOutButton extends StatelessWidget {
     return TextButton(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
-            // Text("Kijelentkezés"),
+          children: [
+            if (textIsVisible) Text("Kijelentkezés"),
             Icon(
               Icons.logout,
               color: Colors.white,
