@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:hello_word/constants.dart';
+import 'package:hello_word/globals.dart';
 import 'package:hello_word/models/shared_data.dart';
 import 'package:hello_word/pages/song_details.dart';
 import 'package:hello_word/repository/song_repository.dart';
@@ -27,11 +29,9 @@ class _SongListState extends State<SongList> {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => SharedData(),
-      child: Scaffold(
+    return Scaffold(
         appBar: AppBar(
-          title: const Text('Énekek'),
+          title: Text(songListTitle[language]),
           centerTitle: true,
           actions: [
             CustomDropdownButton(callBack: (String lang) {
@@ -57,51 +57,31 @@ class _SongListState extends State<SongList> {
                         itemBuilder: (context, index) {
                           final Song song = songs[index];
                           try {
-                            return SongCard(
-                              song: song,
-                              canDelete: _auth.hasAdminRights,
-                              onDelete: () {
-                                showDialog(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: Text('Törlés megerősítése'),
-                                      content: Text(
-                                          'Biztos, hogy törölni szeretné ezt az elemet?'),
-                                      actions: <Widget>[
-                                        TextButton(
-                                          child: Text('Mégsem'),
-                                          onPressed: () {
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                        TextButton(
-                                          child: Text('Törlés'),
-                                          onPressed: () {
-                                            setState(() {
-                                              SongRepository.deleteSong(song);
-                                            });
-                                            Navigator.of(context).pop();
-                                          },
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                );
-                              },
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          SongDetail(song: song)),
-                                );
+                            return FutureBuilder<bool>(
+                              future: _auth.isAdmin,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData && snapshot.data!) {
+                                  return SongCard(
+                                      song: song,
+                                      canDelete: true,
+                                      onDelete: () {
+                                        onDeleteDialog(context, song);
+                                      },
+                                      onTap: () => onSongTap(context, song));
+                                }
+                                return SongCard(
+                                    song: song,
+                                    canDelete: false,
+                                    onDelete: () => {},
+                                    onTap: () => onSongTap(context, song));
                               },
                             );
                           } catch (e) {
                             print(e);
                           }
-                          return Container();
+                          return const Center(
+                            child: CircularProgressIndicator(),
+                          );
                         },
                       ),
                     ),
@@ -113,22 +93,59 @@ class _SongListState extends State<SongList> {
                 );
               }
             }),
-        floatingActionButton: _auth.hasEditorRights
-            ? FloatingActionButton(
+        floatingActionButton: FutureBuilder<bool>(
+          future: _auth.isEditor,
+          builder: (context, snapshot) {
+            if (snapshot.hasData && snapshot.data!) {
+              return FloatingActionButton(
                 onPressed: () {
                   Navigator.of(context)
                       .pushNamed('/editor', arguments: {'operation': 'add'});
                 },
                 child: const Icon(Icons.add),
-              )
-            : Container(),
-      ),
-    );
+              );
+            } else {
+              return Container();
+            }
+          },
+        ));
   }
+
+  void onSongTap(BuildContext context, Song song) => Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => SongDetail(song: song)),
+      );
+
+  void onDeleteDialog(BuildContext context, Song song) => showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: Text(alertTitleDelete[language]),
+            content: Text(alertTextDelete[language]),
+            actions: <Widget>[
+              TextButton(
+                child: Text(cancelText[language]),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+              TextButton(
+                child: Text(delete[language]),
+                onPressed: () {
+                  setState(() {
+                    SongRepository.deleteSong(song);
+                  });
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        },
+      );
 
   Widget buildSearchBar() => SearchWidget(
         text: query,
-        hintText: "Keresés",
+        hintText: searchBarHintText[language],
         onChanged: searchSong,
       );
 

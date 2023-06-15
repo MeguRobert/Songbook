@@ -7,6 +7,9 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:hello_word/pages/song_editor.dart';
 import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/pages/verify_email.dart';
+import 'package:provider/provider.dart';
+
+import 'models/shared_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,21 +22,24 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Zengjed a dalt!',
-        theme: ThemeData(
-          primarySwatch: Colors.palette,
-          visualDensity: VisualDensity.adaptivePlatformDensity,
-        ),
-        initialRoute: '/',
-        routes: {
-          '/': (BuildContext context) => const MainPage(),
-          '/songlist': (BuildContext context) => const SongList(),
-          '/editor': (BuildContext context) => const SongEditor(),
-          '/auth/registration': (BuildContext context) => const Registration(),
-          '/auth/login': (BuildContext context) => const Login(),
-        });
+    return ChangeNotifierProvider(
+      create: (context) => SharedData(),
+      child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Zengjed a dalt!',
+          theme: ThemeData(
+            primarySwatch: Colors.palette,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          initialRoute: '/',
+          routes: {
+            '/': (BuildContext context) => const MainPage(),
+            '/songlist': (BuildContext context) => const SongList(),
+            '/editor': (BuildContext context) => const SongEditor(),
+            // '/auth/registration': (BuildContext context) => const Registration(),
+            '/auth/login': (BuildContext context) => const Login(),
+          }),
+    );
   }
 }
 

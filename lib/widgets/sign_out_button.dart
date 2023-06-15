@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../constants.dart';
+import '../globals.dart';
 import '../services/auth.dart';
 
 class SignOutButton extends StatelessWidget {
@@ -14,7 +16,7 @@ class SignOutButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            if (textIsVisible) Text("Kijelentkezés"),
+            if (textIsVisible) Text(authLogout[language]),
             Icon(
               Icons.logout,
               color: Colors.white,
@@ -26,17 +28,17 @@ class SignOutButton extends StatelessWidget {
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(
-                title: Text("Are you sure you want to sign out?"),
+                title: Text(authConfirmLogOut[language]),
                 actions: <Widget>[
                   TextButton(
-                    child: Text("Yes"),
+                    child: Text(yesText[language]),
                     onPressed: () async {
                       Navigator.of(context).pop();
                       await _auth.signOut();
                     },
                   ),
                   TextButton(
-                    child: Text("No"),
+                    child: Text(noText[language]),
                     onPressed: () {
                       Navigator.of(context).pop();
                     },

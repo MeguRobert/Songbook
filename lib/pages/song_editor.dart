@@ -1,6 +1,8 @@
 // ignore_for_file: avoid_print
 
 import 'package:flutter/material.dart';
+import 'package:hello_word/constants.dart';
+import 'package:hello_word/globals.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/repository/song_repository.dart';
 import 'package:hello_word/tools/editorController.dart';
@@ -28,7 +30,7 @@ class _SongEditorState extends State<SongEditor> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Song Editor'),
+        title: Text(songEditorTitle[language]),
         centerTitle: true,
       ),
       body: Editor(song, readOnly, submitted),
@@ -38,18 +40,16 @@ class _SongEditorState extends State<SongEditor> {
             submitted = true;
           });
           songState = song;
-          print('save');
           dynamic response;
           if (operation == "add") {
-            response = await SongRepository.saveSong(Parser.parseContent(song));
+            response = await SongRepository.saveSong(song);
           } else if (operation == "edit") {
-            response =
-                await SongRepository.updateSong(Parser.parseContent(song));
+            response = await SongRepository.updateSong(song);
           }
 
           if (response is Exception) {
             if (mounted) {
-              showMessage(context, 'Hiba',
+              showMessage(context, errorText[language],
                   response.toString().replaceFirst('Exception:', ""));
             }
           } else {

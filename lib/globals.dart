@@ -1,3 +1,3 @@
 import 'constants.dart';
 
-String songsLanguage = languages.first;
+String language = languages.first.toLowerCase();
