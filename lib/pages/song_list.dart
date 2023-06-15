@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
@@ -60,6 +61,9 @@ class _SongListState extends State<SongList> {
                             return FutureBuilder<bool>(
                               future: _auth.isAdmin,
                               builder: (context, snapshot) {
+                                var songShouldBeVisible = song.approved ||
+                                    _auth.currentUser!.email! ==
+                                        song.uploaderEmail;
                                 if (snapshot.hasData && snapshot.data!) {
                                   return SongCard(
                                       song: song,
@@ -68,12 +72,14 @@ class _SongListState extends State<SongList> {
                                         onDeleteDialog(context, song);
                                       },
                                       onTap: () => onSongTap(context, song));
+                                } else if (songShouldBeVisible) {
+                                  return SongCard(
+                                      song: song,
+                                      canDelete: false,
+                                      onDelete: () => {},
+                                      onTap: () => onSongTap(context, song));
                                 }
-                                return SongCard(
-                                    song: song,
-                                    canDelete: false,
-                                    onDelete: () => {},
-                                    onTap: () => onSongTap(context, song));
+                                return SizedBox.shrink();
                               },
                             );
                           } catch (e) {
@@ -105,7 +111,7 @@ class _SongListState extends State<SongList> {
                 child: const Icon(Icons.add),
               );
             } else {
-              return Container();
+              return SizedBox.shrink();
             }
           },
         ));
@@ -152,10 +158,10 @@ class _SongListState extends State<SongList> {
   void searchSong(String query) {
     final queriedSongs = currentSongList!.where((song) {
       final number = song.id.toString();
-      final titleLower = song.title.toLowerCase();
-      final authorLower = song.author.toLowerCase();
-      final searchLower = query.toLowerCase();
-      final uploaderLower = song.uploader.toLowerCase();
+      final titleLower = removeDiacritics(song.title.toLowerCase());
+      final authorLower = removeDiacritics(song.author.toLowerCase());
+      final searchLower = removeDiacritics(query.toLowerCase());
+      final uploaderLower = removeDiacritics(song.uploader.toLowerCase());
 
       return titleLower.contains(searchLower) ||
           authorLower.startsWith(searchLower) ||

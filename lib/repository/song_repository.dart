@@ -55,6 +55,17 @@ class SongRepository {
     }
   }
 
+  // static Future toggleApprove(Song song) async {
+  //   try {
+  //     await _validateSong(song);
+  //     final docSong = songCollection.doc('${song.id}');
+  //     docSong.update(song.toJson());
+  //   } catch (e) {
+  //     print(e.toString());
+  //     return e;
+  //   }
+  // }
+
   static Future deleteSong(Song song) async {
     try {
       final docSong = songCollection.doc('${song.id}');

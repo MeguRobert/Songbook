@@ -8,14 +8,14 @@ import '../repository/song_repository.dart';
 import '../tools/show_message.dart';
 import '../widgets/dropdown_button.dart';
 
-class Login extends StatefulWidget {
-  const Login({Key? key}) : super(key: key);
+class Authentication extends StatefulWidget {
+  const Authentication({Key? key}) : super(key: key);
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Authentication> createState() => _AuthenticationState();
 }
 
-class _LoginState extends State<Login> {
+class _AuthenticationState extends State<Authentication> {
   final AuthService _auth = AuthService();
   final userNameController = TextEditingController();
   final emailController = TextEditingController();

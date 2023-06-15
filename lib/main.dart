@@ -1,7 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:hello_word/pages/login.dart';
-import 'package:hello_word/pages/register.dart';
+import 'package:hello_word/pages/authentication.dart';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:hello_word/pages/song_editor.dart';
@@ -37,7 +36,7 @@ class MyApp extends StatelessWidget {
             '/songlist': (BuildContext context) => const SongList(),
             '/editor': (BuildContext context) => const SongEditor(),
             // '/auth/registration': (BuildContext context) => const Registration(),
-            '/auth/login': (BuildContext context) => const Login(),
+            '/auth/login': (BuildContext context) => const Authentication(),
           }),
     );
   }
@@ -59,7 +58,7 @@ class _MainPageState extends State<MainPage> {
             if (snapshot.hasData) {
               return const VerifyEmailPage();
             } else {
-              return const Login();
+              return const Authentication();
             }
           },
         ),

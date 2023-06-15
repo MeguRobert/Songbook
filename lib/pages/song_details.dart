@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
+import 'package:hello_word/repository/song_repository.dart';
 import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -28,24 +29,8 @@ class _SongDetailState extends State<SongDetail> {
         title: Text(widget.song.title),
         centerTitle: true,
         actions: [
-          FutureBuilder<bool>(
-            future: _auth.isEditor,
-            builder: (context, snapshot) {
-              if (snapshot.hasData && snapshot.data!) {
-                return IconButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed('/editor', arguments: {
-                      "operation": 'edit',
-                      'song': widget.song,
-                    });
-                  },
-                  icon: Icon(Icons.edit),
-                );
-              } else {
-                return Container();
-              }
-            },
-          ),
+          buildApproveButton(),
+          buildEditorButton(),
           // TODO PopupMenu
         ],
       ),
@@ -78,6 +63,52 @@ class _SongDetailState extends State<SongDetail> {
           onPress: () {
             _editorStateKey.currentState?.toggleScrolling();
           }),
+    );
+  }
+
+  FutureBuilder<bool> buildEditorButton() {
+    return FutureBuilder<bool>(
+      future: _auth.isEditor,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!) {
+          return IconButton(
+            onPressed: () {
+              Navigator.of(context).pushNamed('/editor', arguments: {
+                "operation": 'edit',
+                'song': widget.song,
+              });
+            },
+            icon: Icon(Icons.edit),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
+    );
+  }
+
+  FutureBuilder<bool> buildApproveButton() {
+    return FutureBuilder<bool>(
+      future: _auth.isAdmin,
+      builder: (context, snapshot) {
+        if (snapshot.hasData && snapshot.data!) {
+          return Checkbox(
+            value: widget.song.approved,
+            onChanged: (value) {
+              setState(() {
+                widget.song.approved = value!;
+                widget.song.approvedBy = _auth.currentUser!.email!;
+                SongRepository.updateSong(widget.song);
+              });
+            },
+            activeColor: Colors.white,
+            checkColor: Colors.palette,
+            side: BorderSide(color: Colors.white),
+          );
+        } else {
+          return SizedBox.shrink();
+        }
+      },
     );
   }
 }
