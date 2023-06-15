@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_word/constants.dart';
+import 'package:hello_word/globals.dart';
 import 'package:hello_word/pages/song_list.dart';
 import 'package:hello_word/services/auth.dart';
 import 'package:hello_word/tools/show_message.dart';
@@ -15,7 +17,6 @@ class VerifyEmailPage extends StatefulWidget {
 
 class _VerifyEmailPageState extends State<VerifyEmailPage> {
   final AuthService _auth = AuthService();
-  bool isEmailVerified = false;
   bool canResendEmail = false;
   Timer? timer;
 
@@ -23,9 +24,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   void initState() {
     super.initState();
 
-    isEmailVerified = _auth.currentUser!.emailVerified;
-
-    if (!isEmailVerified) {
+    if (!_auth.emailIsVerified) {
       sendEmailVerification();
 
       timer = Timer.periodic(
@@ -41,26 +40,26 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
   }
 
   @override
-  Widget build(BuildContext context) => isEmailVerified
+  Widget build(BuildContext context) => _auth.emailIsVerified
       ? const SongList()
       : Scaffold(
           appBar: AppBar(
-            title: const Text("Verify Email"),
+            title: Text(verifyEmailTitle[language]),
           ),
           body: Padding(
             padding: const EdgeInsets.all(16),
             child:
                 Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-              const Text(
-                'Egy ellenőrző emailt küldtünk a megadott címre. Kérjük erősítse meg az email címét! Lehetséges hogy az email a spam mappába került.',
+              Text(
+                verifyEmailContent[language],
                 style: TextStyle(fontSize: 20),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               ElevatedButton.icon(
                 icon: const Icon(Icons.email, size: 32),
-                label: const Text('Email újraküldése',
-                    style: TextStyle(fontSize: 24)),
+                label:
+                    Text(resendEmail[language], style: TextStyle(fontSize: 24)),
                 style: ElevatedButton.styleFrom(
                     minimumSize: const Size.fromHeight(50)),
                 onPressed: canResendEmail ? sendEmailVerification : null,
@@ -70,7 +69,7 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
                     minimumSize: const Size.fromHeight(50)),
                 onPressed: () => FirebaseAuth.instance.signOut(),
                 child:
-                    const Text('Visszavonás', style: TextStyle(fontSize: 24)),
+                    Text(cancelText[language], style: TextStyle(fontSize: 24)),
               )
             ]),
           ),
@@ -85,19 +84,17 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
       await Future.delayed(const Duration(seconds: 10));
       setState(() => canResendEmail = true);
     } on Exception catch (e) {
-      showMessage(context, "Hiba", "Erősítsd meg az emailed!$e");
+      showMessage(
+          context, errorText[language], "${verifyEmailText[language]}$e");
     }
   }
 
   Future checkEmailVerified() async {
-    await FirebaseAuth.instance.currentUser!.reload();
+    await _auth.currentUser!.reload();
 
-    setState(() {
-      isEmailVerified = _auth.currentUser!.emailVerified;
-    });
-
-    if (isEmailVerified) {
+    if (_auth.emailIsVerified) {
       timer?.cancel();
+      setState(() {});
     }
   }
 }

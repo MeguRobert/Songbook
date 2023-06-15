@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../constants.dart';
+import '../globals.dart';
 import '../models/song.dart';
 
 class SongCard extends StatelessWidget {
@@ -31,8 +33,8 @@ class SongCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("Szerző: ${song.author}"),
-              Text("Feltőltő: ${song.uploader}")
+              Text("${songAuthorText[language]}: ${song.author}"),
+              Text("${songUploaderText[language]}: ${song.uploader}")
             ],
           ),
           leading: CircleAvatar(
@@ -47,7 +49,10 @@ class SongCard extends StatelessWidget {
                   ),
                   onPressed: () => onDelete(),
                 )
-              : Container(),
+              : SizedBox(
+                  height: 0,
+                  width: 0,
+                ),
         ),
       ),
     );

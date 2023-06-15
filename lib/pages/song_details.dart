@@ -19,23 +19,6 @@ class _SongDetailState extends State<SongDetail> {
   final GlobalKey<EditorState> _editorStateKey = GlobalKey<EditorState>();
   final AuthService _auth = AuthService();
 
-  void showAction(BuildContext context, int index) {
-    showDialog<void>(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          content: Text("_actionTitles[index]"),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('CLOSE'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   IconData iconScroll = Icons.arrow_right;
   double iconSize = 50;
   @override
@@ -45,13 +28,24 @@ class _SongDetailState extends State<SongDetail> {
         title: Text(widget.song.title),
         centerTitle: true,
         actions: [
-          if (_auth.hasEditorRights)
-            IconButton(
-                onPressed: () {
-                  Navigator.of(context).pushNamed('/editor',
-                      arguments: {"operation": 'edit', 'song': widget.song});
-                },
-                icon: Icon(Icons.edit)),
+          FutureBuilder<bool>(
+            future: _auth.isEditor,
+            builder: (context, snapshot) {
+              if (snapshot.hasData && snapshot.data!) {
+                return IconButton(
+                  onPressed: () {
+                    Navigator.of(context).pushNamed('/editor', arguments: {
+                      "operation": 'edit',
+                      'song': widget.song,
+                    });
+                  },
+                  icon: Icon(Icons.edit),
+                );
+              } else {
+                return Container();
+              }
+            },
+          ),
           // TODO PopupMenu
         ],
       ),

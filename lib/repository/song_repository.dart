@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
+import 'package:hello_word/tools/validate.dart';
 
 import '../models/song.dart';
 import '../tools/show_message.dart';
@@ -65,22 +66,24 @@ class SongRepository {
   }
 
   static Future _validateSong(Song song) async {
+    Parser.prepareSong(song);
     if (song.title.isEmpty) {
-      throw Exception('Nem adtad meg az ének címét!');
+      throw Exception(errorTitleIsEmpty[language]);
     } else if (song.content.isEmpty) {
-      throw Exception('Nem adtad meg az ének szövegét!');
+      throw Exception(errorContentIsEmpty[language]);
     } else {
       QuerySnapshot snapshot =
           await songCollection.where('title', isEqualTo: song.title).get();
       if (snapshot.docs.isNotEmpty &&
           snapshot.docs[0].id != song.id.toString()) {
-        throw Exception('Már van ilyen című ének!');
+        throw Exception(errorTitleExists[language]);
       }
     }
   }
 
   static void changeLanguage(String value) {
-    String language = value.toLowerCase();
+    language = value.toLowerCase();
+
     songCollection =
         FirebaseFirestore.instance.collection('test_songs_$language');
   }

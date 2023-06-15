@@ -1,6 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:hello_word/models/songbook_user.dart';
+
+import '../constants.dart';
+import '../globals.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -21,10 +26,10 @@ class AuthService {
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       if (email.isEmpty) {
-        throw Exception('Nem adott meg emailt!');
+        throw Exception(errorEmailIsEmpty[language]);
       }
       if (password.isEmpty) {
-        throw Exception('Nem adott meg jelszót!');
+        throw Exception(errorPasswordIsEmpty[language]);
       }
       UserCredential result = await _auth.signInWithEmailAndPassword(
         email: email,
@@ -43,13 +48,13 @@ class AuthService {
       String name, String email, String password) async {
     try {
       if (name.isEmpty) {
-        throw Exception('Nem adott meg nevet!');
+        throw Exception(errorUserNameIsEmpty[language]);
       }
       if (email.isEmpty) {
-        throw Exception('Nem adott meg emailt!');
+        throw Exception(errorPasswordIsEmpty[language]);
       }
       if (password.isEmpty) {
-        throw Exception('Nem adott meg jelszót!');
+        throw Exception(errorEmailIsEmpty[language]);
       }
       UserCredential result = await _auth.createUserWithEmailAndPassword(
         email: email,
@@ -57,6 +62,7 @@ class AuthService {
       );
       User? user = result.user;
       await user?.updateDisplayName(name);
+      await registerUserAsReader(user?.uid);
       return user;
     } catch (e) {
       print(e.toString());
@@ -64,11 +70,25 @@ class AuthService {
     }
   }
 
+  Future registerUserAsReader(String? uid) async {
+    try {
+      if (uid != null) {
+        userCollection.doc(uid).set({"isAdmin": false, "isEditor": false});
+      }
+    } catch (e) {
+      print(e.toString());
+      return e;
+    }
+  }
+
+  CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users');
+
   // register with email & password
   Future sendPasswordResetEmail(String email) async {
     try {
       if (email.isEmpty) {
-        throw Exception('Nem adott meg emailt!');
+        throw Exception(errorEmailIsEmpty[language]);
       }
       await _auth.sendPasswordResetEmail(email: email);
     } catch (e) {
@@ -99,27 +119,40 @@ class AuthService {
     }
   }
 
+  Future<UserData?> get currentUserData async {
+    if (currentUser == null) {
+      return null;
+    }
+    try {
+      var userData = await userCollection.doc(currentUser!.uid).get();
+      var isAdmin = userData["isAdmin"];
+      var isEditor = userData["isEditor"];
+      return UserData(
+          email: currentUser!.email!, isAdmin: isAdmin, isEditor: isEditor);
+    } catch (e) {
+      return null;
+    }
+  }
+
   // user is authenticated
   bool get isAuthenticated {
     return currentUser != null;
   }
 
-  bool get hasEditorRights {
-    List<String> editors = ['megurobi14@gmail.com', 'akoslorincz123@gmail.com'];
-    // List<String> editors = []; // for testing
-
-    return editors.contains(currentUser!.email);
+  Future<bool> get isEditor async {
+    UserData? userData = await currentUserData;
+    return userData?.isEditor ?? false;
   }
-  
-   bool get hasAdminRights {
-    List<String> editors = ['megurobi14@gmail.com', 'akoslorincz123@gmail.com'];
-    // List<String> editors = []; // for testing
 
-    return editors.contains(currentUser!.email);
+  Future<bool> get isAdmin async {
+    UserData? userData = await currentUserData;
+    return userData?.isAdmin ?? false;
   }
+
+  bool get emailIsVerified => _auth.currentUser?.emailVerified ?? false;
 }
 
 class PasswordResetEmailResponse {
-  String result = 'success';
+  String result = successText[language];
   int code = 200;
 }

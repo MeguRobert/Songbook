@@ -7,6 +7,8 @@ import 'package:flutter_quill/flutter_quill.dart' as quill;
 import 'package:flutter_quill/flutter_quill.dart';
 import 'package:hello_word/widgets/controlled_text_field_widget.dart';
 
+import '../constants.dart';
+import '../globals.dart';
 import '../models/song.dart';
 import '../tools/editorController.dart';
 
@@ -104,8 +106,7 @@ class EditorState extends State<Editor> {
                               showCursor: !widget.readOnly,
                               // paintCursorAboveText: !widget.readOnly,
                               // floatingCursorDisabled: widget.readOnly,
-                              placeholder:
-                                  "írd be az ének szövegét. Koppints az első sorra",
+                              placeholder: songEditorContentHintText[language],
                             )),
                       ),
                     ),
@@ -164,7 +165,7 @@ class EditorState extends State<Editor> {
           });
           widget.song?.title = value;
         },
-        hintText: 'Írd be a címet',
+        hintText: songEditorTitleHintText[language],
       );
 
   Widget buildAuthor() => ControlledTextFieldWidget(
@@ -175,7 +176,7 @@ class EditorState extends State<Editor> {
           });
           widget.song?.author = value;
         },
-        hintText: 'Írd be az ének szerzőjét',
+        hintText: songAuthorHintText[language],
       );
 }
 

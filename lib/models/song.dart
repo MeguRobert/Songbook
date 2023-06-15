@@ -1,3 +1,8 @@
+import 'package:hello_word/constants.dart';
+import 'package:provider/provider.dart';
+
+import '../globals.dart';
+
 class Song {
   String title;
   String content;
@@ -34,9 +39,9 @@ class Song {
       );
 
   static Song empty() => Song(
-      author: "ismeretlen",
+      author: defaultAuthor[language],
       title: "",
       content: "",
       id: 0,
-      uploader: "Feltöltő");
+      uploader: defaultUploader[language]);
 }

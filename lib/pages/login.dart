@@ -1,8 +1,12 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:hello_word/constants.dart';
+import 'package:hello_word/globals.dart';
 import 'package:hello_word/services/auth.dart';
 
+import '../repository/song_repository.dart';
 import '../tools/show_message.dart';
+import '../widgets/dropdown_button.dart';
 
 class Login extends StatefulWidget {
   const Login({Key? key}) : super(key: key);
@@ -33,48 +37,47 @@ class _LoginState extends State<Login> {
   void validateResponse(dynamic response) {
     // if signInResponse type is User, then the operation was successful
     if (response is User) {
-      showMessage(context, 'Felhasználói adatok',
-          response.displayName ?? 'Felhasználó');
+      // showMessage(context, 'Felhasználói adatok',
+      //     response.displayName ?? 'Felhasználó');
     } else if (response is PasswordResetEmailResponse) {
-      showMessage(context, 'Elfelejtett jelszó',
-          'A jelszó megváltoztatásához elküldtünk egy emailt. A linket megnyitva lehetősége van mágváltoztatni a jelszavát.\nNe aggódjon: jelszava csak az applikáción belül fog megváltoztatni!\n\nLehetséges, hogy emailünk a SPAM mappába került.');
+      showMessage(context, authPasswordResetTitle[language],
+          authPasswordResetMessage[language]);
     } else if (response is FirebaseAuthException) {
       String errorCode = response.code;
       String errorMessage = response.message!;
 
       switch (errorCode) {
         case 'user-not-found':
-          errorMessage =
-              'A felhasználó nem található! Kéjük próbálja újra, vagy regisztráljon!';
+          errorMessage = errorUserNotFound[language];
           break;
         case 'wrong-password':
-          errorMessage = 'Hibás jelszó';
+          errorMessage = errorWrongPassword[language];
           setState(() {
             showForgetPasswordButton = true;
           });
           break;
         case 'invalid-email':
-          errorMessage = 'Hibás email cím';
+          errorMessage = errorIncorrectEmail[language];
           break;
         case 'email-already-in-use':
-          errorMessage = 'Ez az email cím már használatban van!';
+          errorMessage = errorEmailAlreadyInUse[language];
           break;
         case 'weak-password':
-          errorMessage = 'Túl rövid jelszó';
+          errorMessage = errorWeakPassword[language];
           break;
         default:
-          errorMessage = 'Ismeretlen hiba';
+          errorMessage = errorUnknown[language];
           setState(() {
             showForgetPasswordButton = false;
           });
           break;
       }
 
-      showMessage(context, 'Hiba', errorMessage);
+      showMessage(context, errorText[language], errorMessage);
     } else if (response is Exception) {
       // show error message
-      showMessage(
-          context, 'Hiba', response.toString().replaceFirst('Exception:', ""));
+      showMessage(context, errorText[language],
+          response.toString().replaceFirst('Exception:', ""));
     }
   }
 
@@ -82,8 +85,14 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(isLogin ? 'Bejelentkezés' : 'Regisztráció'),
+        title: Text(isLogin ? authLogin[language] : authRegistration[language]),
         centerTitle: true,
+        actions: [
+          CustomDropdownButton(callBack: (String lang) {
+            SongRepository.changeLanguage(lang);
+            setState(() {});
+          })
+        ],
       ),
       // login form in body
       body: Container(
@@ -93,8 +102,8 @@ class _LoginState extends State<Login> {
             if (!isLogin)
               TextField(
                 controller: userNameController,
-                decoration: const InputDecoration(
-                  labelText: 'Felhasználónév',
+                decoration: InputDecoration(
+                  labelText: authUserName[language],
                   labelStyle: TextStyle(
                     color: Colors.grey,
                     fontSize: 20.0,
@@ -122,8 +131,8 @@ class _LoginState extends State<Login> {
             ),
             TextField(
               controller: passwordController,
-              decoration: const InputDecoration(
-                labelText: 'Jelszó',
+              decoration: InputDecoration(
+                labelText: authPassword[language],
                 labelStyle: TextStyle(
                   color: Colors.grey,
                   fontSize: 20.0,
@@ -141,11 +150,11 @@ class _LoginState extends State<Login> {
             if (isLogin)
               TextButton(
                   onPressed: _switchLoginRegister,
-                  child: const Text('Regisztrálok')),
+                  child: Text(authRegistration[language])),
             if (!isLogin)
               TextButton(
                   onPressed: _switchLoginRegister,
-                  child: const Text('Bejelentkezem')),
+                  child: Text(authLogin[language])),
             if (showForgetPasswordButton) _forgetPasswordButton()
           ],
         ),
@@ -154,7 +163,7 @@ class _LoginState extends State<Login> {
   }
 
   Widget _loginButton() => TextButton(
-        child: const Text('Bejelentkezés'),
+        child: Text(authLogin[language]),
         onPressed: () async {
           // sign in with email and password
           dynamic signInResponse =
@@ -165,7 +174,7 @@ class _LoginState extends State<Login> {
       );
 
   Widget _registerButton() => TextButton(
-        child: const Text('Regisztráció'),
+        child: Text(authRegistration[language]),
         onPressed: () async {
           // register in with email and password
           dynamic registrationResponse = await _auth
@@ -180,5 +189,5 @@ class _LoginState extends State<Login> {
         dynamic response = await _auth.sendPasswordResetEmail(email);
         validateResponse(response);
       },
-      child: const Text('Elfelejtettem a jelszavam'));
+      child: Text(authForgotPasswordButtonText[language]));
 }
