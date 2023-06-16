@@ -1,3 +1,4 @@
+import 'package:diacritic/diacritic.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
@@ -8,7 +9,8 @@ import 'package:hello_word/widgets/dropdown_button.dart';
 import 'package:provider/provider.dart';
 
 import '../models/song.dart';
-import '../services/auth.dart';
+import '../models/user_data.dart';
+import '../services/auth_service.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/sign_out_button.dart';
 import '../widgets/song_card.dart';
@@ -60,28 +62,30 @@ class _SongListState extends State<SongList> {
                             return FutureBuilder<bool>(
                               future: _auth.isAdmin,
                               builder: (context, snapshot) {
-                                if (snapshot.hasData && snapshot.data!) {
+                                bool isAdmin =
+                                    snapshot.hasData && snapshot.data!;
+                                bool isOwner = _auth.currentUser!.email! ==
+                                    song.uploaderEmail;
+                                bool hasWritePermissions = isAdmin || isOwner;
+                                bool songShouldBeVisible =
+                                    hasWritePermissions || song.approved;
+
+                                if (songShouldBeVisible) {
                                   return SongCard(
                                       song: song,
-                                      canDelete: true,
+                                      canDelete: hasWritePermissions,
                                       onDelete: () {
                                         onDeleteDialog(context, song);
                                       },
                                       onTap: () => onSongTap(context, song));
                                 }
-                                return SongCard(
-                                    song: song,
-                                    canDelete: false,
-                                    onDelete: () => {},
-                                    onTap: () => onSongTap(context, song));
+                                return SizedBox.shrink();
                               },
                             );
                           } catch (e) {
                             print(e);
                           }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return SizedBox.shrink();
                         },
                       ),
                     ),
@@ -105,7 +109,7 @@ class _SongListState extends State<SongList> {
                 child: const Icon(Icons.add),
               );
             } else {
-              return Container();
+              return SizedBox.shrink();
             }
           },
         ));
@@ -152,10 +156,10 @@ class _SongListState extends State<SongList> {
   void searchSong(String query) {
     final queriedSongs = currentSongList!.where((song) {
       final number = song.id.toString();
-      final titleLower = song.title.toLowerCase();
-      final authorLower = song.author.toLowerCase();
-      final searchLower = query.toLowerCase();
-      final uploaderLower = song.uploader.toLowerCase();
+      final titleLower = removeDiacritics(song.title.toLowerCase());
+      final authorLower = removeDiacritics(song.author.toLowerCase());
+      final searchLower = removeDiacritics(query.toLowerCase());
+      final uploaderLower = removeDiacritics(song.uploader.toLowerCase());
 
       return titleLower.contains(searchLower) ||
           authorLower.startsWith(searchLower) ||

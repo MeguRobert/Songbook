@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
 import 'package:hello_word/pages/song_list.dart';
-import 'package:hello_word/services/auth.dart';
+import 'package:hello_word/services/auth_service.dart';
 import 'package:hello_word/tools/show_message.dart';
 
 class VerifyEmailPage extends StatefulWidget {

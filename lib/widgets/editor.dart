@@ -104,8 +104,6 @@ class EditorState extends State<Editor> {
                               readOnly: widget.readOnly,
                               expands: false,
                               showCursor: !widget.readOnly,
-                              // paintCursorAboveText: !widget.readOnly,
-                              // floatingCursorDisabled: widget.readOnly,
                               placeholder: songEditorContentHintText[language],
                             )),
                       ),

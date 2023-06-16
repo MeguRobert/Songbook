@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
+import 'package:hello_word/services/auth_service.dart';
 import 'package:hello_word/tools/validate.dart';
 
 import '../models/song.dart';
@@ -22,7 +23,7 @@ class SongRepository {
         .map(_songlistFromSnapshot);
   }
 
-  static Future saveSong(Song song) async {
+  static Future createSong(Song song) async {
     try {
       await _validateSong(song);
 
@@ -35,6 +36,7 @@ class SongRepository {
         Song lastSong = Song.fromJson(doc);
         song.id = lastSong.id + 1;
       }
+      song.approved = await AuthService().isAdmin;
 
       final docSong = songCollection.doc(song.id.toString());
       await docSong.set(song.toJson());
@@ -48,7 +50,7 @@ class SongRepository {
     try {
       await _validateSong(song);
       final docSong = songCollection.doc('${song.id}');
-      docSong.update(song.toJson());
+      await docSong.update(song.toJson());
     } catch (e) {
       print(e.toString());
       return e;
