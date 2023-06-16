@@ -4,7 +4,7 @@ import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
 import 'package:hello_word/services/auth_service.dart';
 
-import '../repository/song_repository.dart';
+import '../repositories/song_repository.dart';
 import '../tools/show_message.dart';
 import '../widgets/dropdown_button.dart';
 

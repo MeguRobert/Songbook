@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/models/user_data.dart';
-import 'package:hello_word/repository/song_repository.dart';
+import 'package:hello_word/repositories/song_repository.dart';
 import 'package:hello_word/services/auth_service.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';

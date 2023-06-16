@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
 import 'package:hello_word/models/song.dart';
-import 'package:hello_word/repository/song_repository.dart';
+import 'package:hello_word/repositories/song_repository.dart';
 import 'package:hello_word/tools/editorController.dart';
 import 'package:hello_word/tools/show_message.dart';
 import 'package:hello_word/tools/validate.dart';
