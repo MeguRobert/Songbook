@@ -42,7 +42,7 @@ class _SongEditorState extends State<SongEditor> {
           songState = song;
           dynamic response;
           if (operation == "add") {
-            response = await SongRepository.saveSong(song);
+            response = await SongRepository.createSong(song);
           } else if (operation == "edit") {
             response = await SongRepository.updateSong(song);
           }

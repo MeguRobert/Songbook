@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import '../globals.dart';
-import '../services/auth.dart';
+import '../services/auth_service.dart';
 
 class SignOutButton extends StatelessWidget {
   SignOutButton({Key? key, this.textIsVisible = false}) : super(key: key);

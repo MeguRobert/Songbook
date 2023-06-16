@@ -34,7 +34,7 @@ const Map authPasswordResetMessage = {
       "Am trimis un e-mail pentru a schimba parola. Deschizând linkul ai posibilitatea de a-ți schimba parola. \nNu-ți face griji, parola va fi schimbată doar în cadrul aplicației!\n\nEste posibil ca e-mailul meu să fi fost trimis în folderul SPAM."
 };
 const Map authPasswordResetTitle = {
-  "en": "Forgot passord",
+  "en": "Forgot password",
   "hu": "Elfelejtett jelszó",
   "ro": "Parolă uitată"
 };

@@ -4,7 +4,7 @@ import 'package:hello_word/models/song.dart';
 
 import '../constants.dart';
 import '../globals.dart';
-import '../services/auth.dart';
+import '../services/auth_service.dart';
 import 'package:hello_word/tools/editorController.dart';
 
 class Parser {
@@ -24,6 +24,7 @@ class Parser {
     if (song.author.trim().isEmpty) {
       song.author = defaultAuthor[language];
     }
+    song.uploaderEmail = auth.currentUser!.email!;
     return song;
   }
 

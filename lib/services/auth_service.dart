@@ -2,13 +2,15 @@
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:hello_word/models/songbook_user.dart';
+import 'package:hello_word/models/user_data.dart';
 
 import '../constants.dart';
 import '../globals.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final CollectionReference userCollection =
+      FirebaseFirestore.instance.collection('users');
 
   // sign in anon
   Future signInAnon() async {
@@ -62,7 +64,7 @@ class AuthService {
       );
       User? user = result.user;
       await user?.updateDisplayName(name);
-      await registerUserAsReader(user?.uid);
+      await registerUserAsReader(user);
       return user;
     } catch (e) {
       print(e.toString());
@@ -70,19 +72,30 @@ class AuthService {
     }
   }
 
-  Future registerUserAsReader(String? uid) async {
+  Future registerUserAsReader(User? user) async {
+    await createUser(UserData(
+        id: user!.uid, email: user.email!, isAdmin: false, isEditor: false));
+  }
+
+  Future createUser(UserData userData) async {
     try {
-      if (uid != null) {
-        userCollection.doc(uid).set({"isAdmin": false, "isEditor": false});
-      }
+      final docSong = userCollection.doc(userData.email);
+      await docSong.set(userData.toJson());
     } catch (e) {
       print(e.toString());
       return e;
     }
   }
 
-  CollectionReference userCollection =
-      FirebaseFirestore.instance.collection('users');
+  Future updateUser(UserData userData) async {
+    try {
+      final docSong = userCollection.doc(userData.email);
+      await docSong.update(userData.toJson());
+    } catch (e) {
+      print(e.toString());
+      return e;
+    }
+  }
 
   // register with email & password
   Future sendPasswordResetEmail(String email) async {
@@ -124,11 +137,8 @@ class AuthService {
       return null;
     }
     try {
-      var userData = await userCollection.doc(currentUser!.uid).get();
-      var isAdmin = userData["isAdmin"];
-      var isEditor = userData["isEditor"];
-      return UserData(
-          email: currentUser!.email!, isAdmin: isAdmin, isEditor: isEditor);
+      var userData = await userCollection.doc(currentUser!.email).get();
+      return UserData.fromJson(userData);
     } catch (e) {
       return null;
     }

@@ -9,7 +9,8 @@ import 'package:hello_word/widgets/dropdown_button.dart';
 import 'package:provider/provider.dart';
 
 import '../models/song.dart';
-import '../services/auth.dart';
+import '../models/user_data.dart';
+import '../services/auth_service.dart';
 import '../widgets/search_widget.dart';
 import '../widgets/sign_out_button.dart';
 import '../widgets/song_card.dart';
@@ -61,22 +62,21 @@ class _SongListState extends State<SongList> {
                             return FutureBuilder<bool>(
                               future: _auth.isAdmin,
                               builder: (context, snapshot) {
-                                var songShouldBeVisible = song.approved ||
-                                    _auth.currentUser!.email! ==
-                                        song.uploaderEmail;
-                                if (snapshot.hasData && snapshot.data!) {
+                                bool isAdmin =
+                                    snapshot.hasData && snapshot.data!;
+                                bool isOwner = _auth.currentUser!.email! ==
+                                    song.uploaderEmail;
+                                bool hasWritePermissions = isAdmin || isOwner;
+                                bool songShouldBeVisible =
+                                    hasWritePermissions || song.approved;
+
+                                if (songShouldBeVisible) {
                                   return SongCard(
                                       song: song,
-                                      canDelete: true,
+                                      canDelete: hasWritePermissions,
                                       onDelete: () {
                                         onDeleteDialog(context, song);
                                       },
-                                      onTap: () => onSongTap(context, song));
-                                } else if (songShouldBeVisible) {
-                                  return SongCard(
-                                      song: song,
-                                      canDelete: false,
-                                      onDelete: () => {},
                                       onTap: () => onSongTap(context, song));
                                 }
                                 return SizedBox.shrink();
@@ -85,9 +85,7 @@ class _SongListState extends State<SongList> {
                           } catch (e) {
                             print(e);
                           }
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          );
+                          return SizedBox.shrink();
                         },
                       ),
                     ),

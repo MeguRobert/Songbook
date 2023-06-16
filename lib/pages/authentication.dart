@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
-import 'package:hello_word/services/auth.dart';
+import 'package:hello_word/services/auth_service.dart';
 
 import '../repository/song_repository.dart';
 import '../tools/show_message.dart';
@@ -37,8 +37,6 @@ class _AuthenticationState extends State<Authentication> {
   void validateResponse(dynamic response) {
     // if signInResponse type is User, then the operation was successful
     if (response is User) {
-      // showMessage(context, 'Felhasználói adatok',
-      //     response.displayName ?? 'Felhasználó');
     } else if (response is PasswordResetEmailResponse) {
       showMessage(context, authPasswordResetTitle[language],
           authPasswordResetMessage[language]);
@@ -75,7 +73,6 @@ class _AuthenticationState extends State<Authentication> {
 
       showMessage(context, errorText[language], errorMessage);
     } else if (response is Exception) {
-      // show error message
       showMessage(context, errorText[language],
           response.toString().replaceFirst('Exception:', ""));
     }
@@ -166,8 +163,8 @@ class _AuthenticationState extends State<Authentication> {
         child: Text(authLogin[language]),
         onPressed: () async {
           // sign in with email and password
-          dynamic signInResponse =
-              await _auth.signInWithEmailAndPassword(email, password);
+          dynamic signInResponse = await _auth.signInWithEmailAndPassword(
+              email.trim(), password.trim());
 
           validateResponse(signInResponse);
         },
@@ -177,8 +174,9 @@ class _AuthenticationState extends State<Authentication> {
         child: Text(authRegistration[language]),
         onPressed: () async {
           // register in with email and password
-          dynamic registrationResponse = await _auth
-              .registerWithEmailAndPassword(userName, email, password);
+          dynamic registrationResponse =
+              await _auth.registerWithEmailAndPassword(
+                  userName.trim(), email.trim(), password.trim());
 
           validateResponse(registrationResponse);
         },
