@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:hello_word/constants.dart';
 import 'package:hello_word/globals.dart';
@@ -5,7 +7,6 @@ import 'package:hello_word/services/auth_service.dart';
 import 'package:hello_word/tools/validate.dart';
 
 import '../models/song.dart';
-import '../tools/show_message.dart';
 
 class SongRepository {
   static final _auth = AuthService();
@@ -27,25 +28,27 @@ class SongRepository {
   static Future createSong(Song song) async {
     try {
       await _validateSong(song);
-
-      QuerySnapshot snapshot =
-          await songCollection.orderBy("id", descending: true).get();
-      if (snapshot.docs.isEmpty) {
-        song.id = 1;
-      } else {
-        Object? doc = snapshot.docs[0].data();
-        Song lastSong = Song.fromJson(doc);
-        song.id = lastSong.id + 1;
-      }
+      await _setSongId(song);
       if (await _auth.isAdmin) {
         setSongApprovement(song, true);
       }
 
-      final docSong = songCollection.doc(song.id.toString());
-      await docSong.set(song.toJson());
+      await songCollection.doc(song.id.toString()).set(song.toJson());
     } catch (e) {
       print(e.toString());
       return e;
+    }
+  }
+
+  static Future<void> _setSongId(Song song) async {
+    QuerySnapshot snapshot =
+        await songCollection.orderBy("id", descending: true).get();
+    if (snapshot.docs.isEmpty) {
+      song.id = 1;
+    } else {
+      Object? doc = snapshot.docs[0].data();
+      Song lastSong = Song.fromJson(doc);
+      song.id = lastSong.id + 1;
     }
   }
 
@@ -57,8 +60,7 @@ class SongRepository {
   static Future updateSong(Song song) async {
     try {
       await _validateSong(song);
-      final docSong = songCollection.doc('${song.id}');
-      await docSong.update(song.toJson());
+      await songCollection.doc('${song.id}').update(song.toJson());
     } catch (e) {
       print(e.toString());
       return e;
@@ -67,8 +69,7 @@ class SongRepository {
 
   static Future deleteSong(Song song) async {
     try {
-      final docSong = songCollection.doc('${song.id}');
-      docSong.delete();
+      songCollection.doc('${song.id}').delete();
     } catch (e) {
       print(e.toString());
       return e;
