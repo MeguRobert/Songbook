@@ -12,18 +12,6 @@ class AuthService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
 
-  // sign in anon
-  Future signInAnon() async {
-    try {
-      UserCredential result = await _auth.signInAnonymously();
-      User? user = result.user;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
-  }
-
   // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
@@ -73,11 +61,8 @@ class AuthService {
   }
 
   Future registerUserData(User? user) async {
-    await createUser(
-        UserData(id: user!.uid, email: user.email!, isAdmin: false));
-  }
-
-  Future createUser(UserData userData) async {
+    final userData =
+        UserData(id: user!.uid, email: user.email!, isAdmin: false);
     try {
       final docSong = userCollection.doc(userData.email);
       await docSong.set(userData.toJson());
