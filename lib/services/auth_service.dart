@@ -64,7 +64,7 @@ class AuthService {
       );
       User? user = result.user;
       await user?.updateDisplayName(name);
-      await registerUserAsReader(user);
+      await registerUserData(user);
       return user;
     } catch (e) {
       print(e.toString());
@@ -72,9 +72,9 @@ class AuthService {
     }
   }
 
-  Future registerUserAsReader(User? user) async {
-    await createUser(UserData(
-        id: user!.uid, email: user.email!, isAdmin: false, isEditor: false));
+  Future registerUserData(User? user) async {
+    await createUser(
+        UserData(id: user!.uid, email: user.email!, isAdmin: false));
   }
 
   Future createUser(UserData userData) async {
@@ -147,11 +147,6 @@ class AuthService {
   // user is authenticated
   bool get isAuthenticated {
     return currentUser != null;
-  }
-
-  Future<bool> get isEditor async {
-    UserData? userData = await currentUserData;
-    return userData?.isEditor ?? false;
   }
 
   Future<bool> get isAdmin async {

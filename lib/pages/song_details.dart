@@ -67,16 +67,13 @@ class _SongDetailState extends State<SongDetail> {
     );
   }
 
-  FutureBuilder<UserData?> buildEditorButton() {
+  FutureBuilder<bool?> buildEditorButton() {
     bool currentUserIsOwner =
         _auth.currentUser!.email! == widget.song.uploaderEmail;
-    return FutureBuilder<UserData?>(
-      future: _auth.currentUserData,
-      builder: (context, userSnapshot) {
-        bool canEdit = userSnapshot.hasData &&
-            userSnapshot.data!.isEditor &&
-            currentUserIsOwner;
-        if (userSnapshot.hasData && (canEdit || userSnapshot.data!.isAdmin)) {
+    return FutureBuilder<bool?>(
+      future: _auth.isAdmin,
+      builder: (context, snapshot) {
+        if (currentUserIsOwner || (snapshot.hasData && snapshot.data!)) {
           return IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed('/editor', arguments: {
