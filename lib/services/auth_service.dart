@@ -12,7 +12,6 @@ class AuthService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
 
-  // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       if (email.isEmpty) {
@@ -33,7 +32,6 @@ class AuthService {
     }
   }
 
-  // register with email & password
   Future registerWithEmailAndPassword(
       String name, String email, String password) async {
     try {
@@ -82,7 +80,6 @@ class AuthService {
     }
   }
 
-  // register with email & password
   Future sendPasswordResetEmail(String email) async {
     try {
       if (email.isEmpty) {
@@ -96,7 +93,6 @@ class AuthService {
     return PasswordResetEmailResponse();
   }
 
-  // sign out
   Future signOut() async {
     try {
       return await _auth.signOut();
@@ -106,7 +102,6 @@ class AuthService {
     }
   }
 
-  // get current user
   User? get currentUser {
     try {
       User? user = _auth.currentUser;
@@ -129,7 +124,6 @@ class AuthService {
     }
   }
 
-  // user is authenticated
   bool get isAuthenticated {
     return currentUser != null;
   }
