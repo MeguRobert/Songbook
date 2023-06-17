@@ -24,7 +24,10 @@ class Parser {
     if (song.author.trim().isEmpty) {
       song.author = defaultAuthor[language];
     }
-    song.uploaderEmail = auth.currentUser!.email!;
+    if (song.uploaderEmail.isEmpty) {
+      song.uploaderEmail = auth.currentUser!.email!;
+    }
+    song.lastEditedByEmail = auth.currentUser!.email!;
     return song;
   }
 }

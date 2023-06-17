@@ -68,12 +68,13 @@ class _SongListState extends State<SongList> {
 
                               if (songShouldBeVisible) {
                                 return SongCard(
-                                    song: song,
-                                    canDelete: hasWritePermissions,
-                                    onDelete: () {
-                                      onDeleteDialog(context, song);
-                                    },
-                                    onTap: () => onSongTap(context, song));
+                                  song: song,
+                                  canDelete: hasWritePermissions,
+                                  onDelete: () {
+                                    onDeleteDialog(context, song);
+                                  },
+                                  onTap: () => onSongTap(context, song),
+                                );
                               }
                               return SizedBox.shrink();
                             },

@@ -8,6 +8,7 @@ import '../models/song.dart';
 import '../tools/show_message.dart';
 
 class SongRepository {
+  static final _auth = AuthService();
   static String defaultLanguage = languages.first.toLowerCase();
   static CollectionReference songCollection =
       FirebaseFirestore.instance.collection('test_songs_$defaultLanguage');
@@ -36,7 +37,9 @@ class SongRepository {
         Song lastSong = Song.fromJson(doc);
         song.id = lastSong.id + 1;
       }
-      song.approved = await AuthService().isAdmin;
+      if (await _auth.isAdmin) {
+        setSongApprovement(song, true);
+      }
 
       final docSong = songCollection.doc(song.id.toString());
       await docSong.set(song.toJson());
@@ -44,6 +47,11 @@ class SongRepository {
       print(e.toString());
       return e;
     }
+  }
+
+  static Future setSongApprovement(Song song, bool approved) async {
+    song.approved = approved;
+    song.approvedBy = approved ? _auth.currentUser!.email! : "";
   }
 
   static Future updateSong(Song song) async {

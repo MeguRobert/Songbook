@@ -62,7 +62,7 @@ class Song {
         approved: false,
         approvedBy: "",
         uploader: defaultUploader[language],
-        uploaderEmail: defaultUploader[language],
-        lastEditedByEmail: defaultUploader[language],
+        uploaderEmail: "",
+        lastEditedByEmail: "",
       );
 }

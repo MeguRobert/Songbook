@@ -99,8 +99,7 @@ class _SongDetailState extends State<SongDetail> {
             value: widget.song.approved,
             onChanged: (value) {
               setState(() {
-                widget.song.approved = value!;
-                widget.song.approvedBy = value ? _auth.currentUser!.email! : '';
+                SongRepository.setSongApprovement(widget.song, value!);
                 SongRepository.updateSong(widget.song);
               });
             },
