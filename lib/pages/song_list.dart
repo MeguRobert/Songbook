@@ -47,8 +47,8 @@ class _SongListState extends State<SongList> {
             stream: SongRepository.songs,
             builder: (context, AsyncSnapshot<List<Song>> snapshot) {
               if (snapshot.hasData) {
-                List<Song> songs = filteredSongs ?? snapshot.data!;
                 currentSongList = snapshot.data!;
+                List<Song> songs = filteredSongs ?? currentSongList!;
 
                 return Column(
                   children: [

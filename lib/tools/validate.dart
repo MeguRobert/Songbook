@@ -27,8 +27,4 @@ class Parser {
     song.uploaderEmail = auth.currentUser!.email!;
     return song;
   }
-
-  static String makeEmtpyIfIsOnlyWhitespace(String text) {
-    return RegExp(whitespaces).hasMatch(text) ? '' : text;
-  }
 }

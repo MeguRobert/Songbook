@@ -160,8 +160,8 @@ class EditorState extends State<Editor> {
         onChanged: (value) {
           setState(() {
             title = value;
+            widget.song?.title = value;
           });
-          widget.song?.title = value;
         },
         hintText: songEditorTitleHintText[language],
       );
@@ -171,8 +171,8 @@ class EditorState extends State<Editor> {
         onChanged: (value) {
           setState(() {
             author = value;
+            widget.song?.author = value;
           });
-          widget.song?.author = value;
         },
         hintText: songAuthorHintText[language],
       );

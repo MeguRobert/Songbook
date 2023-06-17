@@ -36,8 +36,7 @@ class MyApp extends StatelessWidget {
             '/': (BuildContext context) => const MainPage(),
             '/songlist': (BuildContext context) => const SongList(),
             '/editor': (BuildContext context) => const SongEditor(),
-            // '/auth/registration': (BuildContext context) => const Registration(),
-            '/auth/login': (BuildContext context) => const Authentication(),
+            '/auth': (BuildContext context) => const Authentication(),
           }),
     );
   }
