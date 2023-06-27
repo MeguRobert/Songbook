@@ -9,16 +9,11 @@ quill.QuillController editorController = quill.QuillController.basic();
 
 class EditorController {
   static void onSave(Song songs) {
-    print(songs);
     List<dynamic> documentJSON = editorController.document.toDelta().toJson();
     String json = jsonEncode(documentJSON);
-    print('onsave');
-
-    // extractChords(documentJSON);
   }
 
   static void onLoad(String? value) {
-    print('onload');
     if (value == null || value == '') return;
     var contentJSON = jsonDecode(value);
     editorController = quill.QuillController(

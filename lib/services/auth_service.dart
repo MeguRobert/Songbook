@@ -12,19 +12,6 @@ class AuthService {
   final CollectionReference userCollection =
       FirebaseFirestore.instance.collection('users');
 
-  // sign in anon
-  Future signInAnon() async {
-    try {
-      UserCredential result = await _auth.signInAnonymously();
-      User? user = result.user;
-      return user;
-    } catch (e) {
-      print(e.toString());
-      return null;
-    }
-  }
-
-  // sign in with email & password
   Future signInWithEmailAndPassword(String email, String password) async {
     try {
       if (email.isEmpty) {
@@ -45,7 +32,6 @@ class AuthService {
     }
   }
 
-  // register with email & password
   Future registerWithEmailAndPassword(
       String name, String email, String password) async {
     try {
@@ -64,7 +50,7 @@ class AuthService {
       );
       User? user = result.user;
       await user?.updateDisplayName(name);
-      await registerUserAsReader(user);
+      await registerUserData(user);
       return user;
     } catch (e) {
       print(e.toString());
@@ -72,12 +58,9 @@ class AuthService {
     }
   }
 
-  Future registerUserAsReader(User? user) async {
-    await createUser(UserData(
-        id: user!.uid, email: user.email!, isAdmin: false, isEditor: false));
-  }
-
-  Future createUser(UserData userData) async {
+  Future registerUserData(User? user) async {
+    final userData =
+        UserData(id: user!.uid, email: user.email!, isAdmin: false);
     try {
       final docSong = userCollection.doc(userData.email);
       await docSong.set(userData.toJson());
@@ -97,7 +80,6 @@ class AuthService {
     }
   }
 
-  // register with email & password
   Future sendPasswordResetEmail(String email) async {
     try {
       if (email.isEmpty) {
@@ -111,7 +93,6 @@ class AuthService {
     return PasswordResetEmailResponse();
   }
 
-  // sign out
   Future signOut() async {
     try {
       return await _auth.signOut();
@@ -121,7 +102,6 @@ class AuthService {
     }
   }
 
-  // get current user
   User? get currentUser {
     try {
       User? user = _auth.currentUser;
@@ -144,14 +124,8 @@ class AuthService {
     }
   }
 
-  // user is authenticated
   bool get isAuthenticated {
     return currentUser != null;
-  }
-
-  Future<bool> get isEditor async {
-    UserData? userData = await currentUserData;
-    return userData?.isEditor ?? false;
   }
 
   Future<bool> get isAdmin async {

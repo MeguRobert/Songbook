@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hello_word/models/song.dart';
 import 'package:hello_word/models/user_data.dart';
-import 'package:hello_word/repository/song_repository.dart';
+import 'package:hello_word/repositories/song_repository.dart';
 import 'package:hello_word/services/auth_service.dart';
 import 'package:hello_word/widgets/editor.dart';
 import 'package:syncfusion_flutter_sliders/sliders.dart';
@@ -67,16 +67,13 @@ class _SongDetailState extends State<SongDetail> {
     );
   }
 
-  FutureBuilder<UserData?> buildEditorButton() {
+  FutureBuilder<bool?> buildEditorButton() {
     bool currentUserIsOwner =
         _auth.currentUser!.email! == widget.song.uploaderEmail;
-    return FutureBuilder<UserData?>(
-      future: _auth.currentUserData,
-      builder: (context, userSnapshot) {
-        bool canEdit = userSnapshot.hasData &&
-            userSnapshot.data!.isEditor &&
-            currentUserIsOwner;
-        if (userSnapshot.hasData && (canEdit || userSnapshot.data!.isAdmin)) {
+    return FutureBuilder<bool?>(
+      future: _auth.isAdmin,
+      builder: (context, snapshot) {
+        if (currentUserIsOwner || (snapshot.hasData && snapshot.data!)) {
           return IconButton(
             onPressed: () {
               Navigator.of(context).pushNamed('/editor', arguments: {
@@ -102,8 +99,7 @@ class _SongDetailState extends State<SongDetail> {
             value: widget.song.approved,
             onChanged: (value) {
               setState(() {
-                widget.song.approved = value!;
-                widget.song.approvedBy = _auth.currentUser!.email!;
+                SongRepository.setSongApprovement(widget.song, value!);
                 SongRepository.updateSong(widget.song);
               });
             },

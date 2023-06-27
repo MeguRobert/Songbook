@@ -33,8 +33,14 @@ class SongCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text("${songAuthorText[language]}: ${song.author}"),
-              Text("${songUploaderText[language]}: ${song.uploader}")
+              Text(
+                "${songAuthorText[language]}: ${song.author}",
+                overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                "${songUploaderText[language]}: ${song.uploader}",
+                overflow: TextOverflow.ellipsis,
+              )
             ],
           ),
           leading: CircleAvatar(

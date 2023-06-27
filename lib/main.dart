@@ -1,14 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/material.dart';
-import 'package:hello_word/pages/authentication.dart';
-
 import 'package:firebase_core/firebase_core.dart';
-import 'package:hello_word/pages/song_editor.dart';
-import 'package:hello_word/pages/song_list.dart';
-import 'package:hello_word/pages/verify_email.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import 'models/shared_data.dart';
+import 'pages/authentication.dart';
+import 'pages/song_editor.dart';
+import 'pages/song_list.dart';
+import 'pages/verify_email.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +25,7 @@ class MyApp extends StatelessWidget {
       create: (context) => SharedData(),
       child: MaterialApp(
           debugShowCheckedModeBanner: false,
-          title: 'Zengjed a dalt!',
+          title: 'Worship Songbook',
           theme: ThemeData(
             primarySwatch: Colors.palette,
             visualDensity: VisualDensity.adaptivePlatformDensity,
@@ -36,8 +35,7 @@ class MyApp extends StatelessWidget {
             '/': (BuildContext context) => const MainPage(),
             '/songlist': (BuildContext context) => const SongList(),
             '/editor': (BuildContext context) => const SongEditor(),
-            // '/auth/registration': (BuildContext context) => const Registration(),
-            '/auth/login': (BuildContext context) => const Authentication(),
+            '/auth': (BuildContext context) => const Authentication(),
           }),
     );
   }
