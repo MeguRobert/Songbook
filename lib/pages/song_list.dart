@@ -60,7 +60,7 @@ class _SongListState extends State<SongList> {
                             future: _auth.isAdmin,
                             builder: (context, snapshot) {
                               bool isAdmin = snapshot.hasData && snapshot.data!;
-                              bool isOwner = _auth.currentUser!.email! ==
+                              bool isOwner = _auth.currentUser?.email! ==
                                   song.uploaderEmail;
                               bool hasWritePermissions = isAdmin || isOwner;
                               bool songShouldBeVisible =

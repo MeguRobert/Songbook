@@ -14,15 +14,22 @@ class SongRepository {
   static CollectionReference songCollection =
       FirebaseFirestore.instance.collection('test_songs_$defaultLanguage');
 
-  static List<Song> _songlistFromSnapshot(QuerySnapshot snapshot) {
-    return snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList();
-  }
-
   static Stream<List<Song>> get songs {
     return songCollection
         .orderBy('id', descending: false)
         .snapshots()
         .map(_songlistFromSnapshot);
+  }
+
+  static List<Song> _songlistFromSnapshot(QuerySnapshot snapshot) {
+    return snapshot.docs.map((doc) => Song.fromJson(doc.data())).toList();
+  }
+
+  static void changeLanguage(String value) {
+    language = value.toLowerCase();
+
+    songCollection =
+        FirebaseFirestore.instance.collection('test_songs_$language');
   }
 
   static Future createSong(Song song) async {
@@ -40,15 +47,12 @@ class SongRepository {
     }
   }
 
-  static Future<void> _setSongId(Song song) async {
-    QuerySnapshot snapshot =
-        await songCollection.orderBy("id", descending: true).get();
-    if (snapshot.docs.isEmpty) {
-      song.id = 1;
-    } else {
-      Object? doc = snapshot.docs[0].data();
-      Song lastSong = Song.fromJson(doc);
-      song.id = lastSong.id + 1;
+  static Future deleteSong(Song song) async {
+    try {
+      songCollection.doc('${song.id}').delete();
+    } catch (e) {
+      print(e.toString());
+      return e;
     }
   }
 
@@ -67,12 +71,15 @@ class SongRepository {
     }
   }
 
-  static Future deleteSong(Song song) async {
-    try {
-      songCollection.doc('${song.id}').delete();
-    } catch (e) {
-      print(e.toString());
-      return e;
+  static Future<void> _setSongId(Song song) async {
+    QuerySnapshot snapshot =
+        await songCollection.orderBy("id", descending: true).get();
+    if (snapshot.docs.isEmpty) {
+      song.id = 1;
+    } else {
+      Object? doc = snapshot.docs[0].data();
+      Song lastSong = Song.fromJson(doc);
+      song.id = lastSong.id + 1;
     }
   }
 
@@ -90,12 +97,5 @@ class SongRepository {
         throw Exception(errorTitleExists[language]);
       }
     }
-  }
-
-  static void changeLanguage(String value) {
-    language = value.toLowerCase();
-
-    songCollection =
-        FirebaseFirestore.instance.collection('test_songs_$language');
   }
 }

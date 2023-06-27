@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.worship.songbook">
     <application
-        android:label="Zengjed a dalt!"
+        android:label="Worship songbook"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

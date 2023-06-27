@@ -27,6 +27,7 @@ class _AuthenticationState extends State<Authentication> {
 
   bool isLogin = true;
   bool showForgetPasswordButton = false;
+  bool isPasswordVisible = false;
 
   void _switchLoginRegister() {
     setState(() {
@@ -134,8 +135,19 @@ class _AuthenticationState extends State<Authentication> {
                   color: Colors.grey,
                   fontSize: 20.0,
                 ),
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    isPasswordVisible ? Icons.visibility : Icons.visibility_off,
+                    color: Colors.grey,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      isPasswordVisible = !isPasswordVisible;
+                    });
+                  },
+                ),
               ),
-              obscureText: true,
+              obscureText: !isPasswordVisible,
               onChanged: (value) {
                 password = value;
               },
