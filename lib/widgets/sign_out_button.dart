@@ -33,7 +33,7 @@ class SignOutButton extends StatelessWidget {
                   TextButton(
                     child: Text(yesText[language]),
                     onPressed: () async {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).popAndPushNamed("/");
                       await _auth.signOut();
                     },
                   ),

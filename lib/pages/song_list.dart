@@ -27,6 +27,15 @@ class _SongListState extends State<SongList> {
   List<Song>? currentSongList;
 
   @override
+  void initState() {
+    if (!_auth.isAuthenticated) {
+      Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
+    }
+
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
