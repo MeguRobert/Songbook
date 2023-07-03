@@ -22,9 +22,9 @@ class _SongEditorState extends State<SongEditor> {
 
   @override
   Widget build(BuildContext context) {
-    final Map data = ModalRoute.of(context)?.settings.arguments as Map;
-    String operation = data['operation'];
-    Song song = data['song'] ?? songState;
+    final Map? data = ModalRoute.of(context)?.settings.arguments as Map?;
+    String operation = data?['operation'] as String? ?? "add";
+    Song song = data?['song'] ?? songState;
     bool submitted = false;
     bool readOnly = false;
 
@@ -55,8 +55,7 @@ class _SongEditorState extends State<SongEditor> {
           } else {
             editorController.clear();
             if (mounted) {
-              Navigator.pushNamedAndRemoveUntil(
-                  context, "/songlist", (r) => false);
+              Navigator.pushNamedAndRemoveUntil(context, "/", (r) => false);
             }
           }
         },

@@ -5,7 +5,6 @@ class ControlledTextFieldWidget extends StatefulWidget {
   final ValueChanged<String> onChanged;
   final String hintText;
   final InputDecoration? inputDecoration;
-  
 
   const ControlledTextFieldWidget(
       {Key? key,
@@ -28,7 +27,6 @@ class _ControlledTextFieldWidgetState extends State<ControlledTextFieldWidget> {
     // TODO: implement initState
     super.initState();
     controller = TextEditingController(text: widget.text);
-
   }
 
   @override
@@ -36,22 +34,21 @@ class _ControlledTextFieldWidgetState extends State<ControlledTextFieldWidget> {
     const styleActive = TextStyle(color: Colors.black);
     const styleHint = TextStyle(color: Colors.black54);
     final style = widget.text.isEmpty ? styleHint : styleActive;
-    
 
     return Container(
-      height: 42,
+      // height: 42,
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         border: Border.all(color: Colors.black26),
       ),
-      padding: const EdgeInsets.all(8),
+      padding: const EdgeInsets.symmetric(horizontal: 8),
       child: TextField(
         controller: controller,
         decoration: widget.inputDecoration ??
             InputDecoration(
-              contentPadding: const EdgeInsets.all(8),
+              // contentPadding: const EdgeInsets.all(8),
               suffixIcon: widget.text.isNotEmpty
                   ? GestureDetector(
                       child: Icon(Icons.close, color: style.color),
@@ -67,6 +64,7 @@ class _ControlledTextFieldWidgetState extends State<ControlledTextFieldWidget> {
               border: InputBorder.none,
             ),
         style: style,
+        textAlignVertical: TextAlignVertical.center,
         onChanged: widget.onChanged,
       ),
     );

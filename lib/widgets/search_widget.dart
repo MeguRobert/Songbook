@@ -26,35 +26,37 @@ class _SearchWidgetState extends State<SearchWidget> {
     final style = widget.text.isEmpty ? styleHint : styleActive;
 
     return Container(
-      height: 42,
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         color: Colors.white,
         border: Border.all(color: Colors.black26),
       ),
-      padding: const EdgeInsets.all(8),
-      child: TextField(
-        controller: controller,
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.all(8),
-          icon: Icon(Icons.search, color: style.color),
-          suffixIcon: widget.text.isNotEmpty
-              ? GestureDetector(
-                  child: Icon(Icons.close, color: style.color),
-                  onTap: () {
-                    controller.clear();
-                    widget.onChanged('');
-                    FocusScope.of(context).requestFocus(FocusNode());
-                  },
-                )
-              : null,
-          hintText: widget.hintText,
-          hintStyle: style,
-          border: InputBorder.none,
+      padding: const EdgeInsets.symmetric(horizontal: 8),
+      child: Center(
+        child: TextField(
+          textAlignVertical:
+              TextAlignVertical.center, // Align text vertically to center
+          controller: controller,
+          decoration: InputDecoration(
+            prefixIcon: Icon(Icons.search, color: style.color),
+            suffixIcon: widget.text.isNotEmpty
+                ? GestureDetector(
+                    child: Icon(Icons.close, color: style.color),
+                    onTap: () {
+                      controller.clear();
+                      widget.onChanged('');
+                      FocusScope.of(context).requestFocus(FocusNode());
+                    },
+                  )
+                : null,
+            hintText: widget.hintText,
+            hintStyle: style,
+            border: InputBorder.none,
+          ),
+          style: style,
+          onChanged: widget.onChanged,
         ),
-        style: style,
-        onChanged: widget.onChanged,
       ),
     );
   }
